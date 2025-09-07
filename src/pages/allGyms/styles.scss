@@ -1,0 +1,19 @@
+.custom-carousel-modal .slick-prev:before,
+.custom-carousel-modal .slick-next:before {
+  color: black !important;
+  font-size: 20px;
+}
+
+.custom-carousel-modal .slick-prev:hover:before,
+.custom-carousel-modal .slick-next:hover:before {
+  color: #000 !important;
+}
+.custom-carousel-modal{
+  .ant-modal-header{
+    background-color: transparent;
+  }
+  .ant-modal-content{
+
+    background-color: #9c9c9c;
+  }
+}

@@ -1,0 +1,119 @@
+.summary-stack {
+    display: grid;
+    gap: 12px;
+}
+
+.scard {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+
+    &.attendance {
+        background: #1890ff1a;
+    }
+
+    &.insights {
+        background-color: #ff4d4f1a;
+
+        .ant-statistic-content-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .red {
+            .ant-statistic-content-value {
+                color: #ff4d4f;
+            }
+        }
+    }
+
+    &.goal {
+        background-color: #52c41a1a;
+    }
+
+    .scard__title {
+        font-weight: 700;
+        margin-bottom: 8px;
+        font-size: 18px;
+    }
+
+    .scard__muted {
+        color: var(--muted);
+        font-weight: 500;
+    }
+
+    .scard__percentage {
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    .ant-statistic-title {
+        font-size: 16px;
+    }
+
+    .ant-statistic-content-value-int,
+    .ant-statistic-content-value-value {
+        font-size: 14px;
+    }
+
+    .scard__row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+    }
+
+    .ant-card-body {
+        flex-direction: column;
+    }
+
+    .content {
+        display: flex;
+        flex-direction: column;
+
+        .present,
+        .absent,
+        .rate {
+            .ant-statistic-content-value-int {
+                font-size: 16px;
+                font-weight: 700;
+            }
+        }
+
+        .present {
+            .ant-statistic-content-value-int {
+                color: #52c41a;
+            }
+
+        }
+
+        .absent {
+            .ant-statistic-content-value-int {
+                color: #ff4d4f;
+            }
+        }
+
+        .rate {
+            .ant-statistic-content-value {
+                font-size: 16px;
+                font-weight: 700;
+                color: #1890ff;
+            }
+        }
+    }
+
+    .ant-statistic {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+
+.attendance,
+.insights {
+    .ant-card-body {
+        display: block !important;
+        margin: 0 !important;
+        padding: 12px !important;
+    }
+}

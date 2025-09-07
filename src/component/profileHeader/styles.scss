@@ -1,0 +1,50 @@
+@use "../../styles/variables" as *;
+
+.ph {
+    .ant-card-body{
+        background-color: transparent;
+  padding: 15px !important;
+  padding-inline: 24px;
+    }
+    .ph__left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .ph__meta {
+        .ph__name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .ph__tags {
+            margin: 6px 0;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .ph__valid {
+            color: var(--muted);
+            font-size: 13px;
+        }
+    }
+
+    .ph__item .ph__label {
+        color: var(--muted);
+        font-size: 12px;
+        margin-bottom: 2px;
+    }
+
+    .ph__item .ph__value {
+        font-weight: 600;
+    }
+
+    .ph__contact {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+    }
+}
