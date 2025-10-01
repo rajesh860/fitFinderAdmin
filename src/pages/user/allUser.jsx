@@ -15,11 +15,7 @@ const AllUser = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [newFeeStatus, setNewFeeStatus] = useState("");
 
-  // Open Modal
-  const openModal = (record) => {
-    setSelectedUser(record);
-    setIsModalOpen(true);
-  };
+
 
   // Confirm Update
   const handleModalOk = async () => {
@@ -58,7 +54,6 @@ const AllUser = () => {
       dataIndex: "name",
       key: "name",
       render:(r,record) => {
-        console.log(record,"asfdgdfnb")
         return(<Space size={12} align="center" className="ua-member-cell">
         <Avatar src={record.photo} size={40} />
         <div className="ua-member-meta">
@@ -105,15 +100,15 @@ const AllUser = () => {
         </Tag>
       ),
     },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) => (
-        <Button type="primary" onClick={() => openModal(record)}>
-          Change Status
-        </Button>
-      ),
-    },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   render: (_, record) => (
+    //     <Button type="primary" onClick={() => openModal(record)}>
+    //       Change Status
+    //     </Button>
+    //   ),
+    // },
     {
       title: "More Detail",
       key: "view",

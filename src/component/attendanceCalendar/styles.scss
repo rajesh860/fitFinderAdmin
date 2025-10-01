@@ -1,6 +1,10 @@
 @use "../../styles/variables" as *;
 
 .cal-wrap {
+    td{
+         cursor: not-allowed !important;
+  pointer-events: none !important;
+    }
     .attendance-cal {
 
         .ant-picker-calendar-date-content {
@@ -25,24 +29,36 @@
             align-items: center;
             justify-content: center;
             transition: 0.3s;
-
+          
+&.none{
+    background-color: rgb(239, 239, 239);
+}
             &.empty {
-                background: #f9f9f9;
+                background: #ffffffe3;
             }
 
             &.present {
-                background: rgba(82, 196, 26, 0.1);
+                background: #D8F1E6;
             }
 
             &.absent {
-                background: rgba(255, 77, 79, 0.1);
+                background: #FDDBDA;
             }
 
             &.today {
                 background: rgba(24, 144, 255, 0.1);
                 border: 1px solid #1890ff;
             }
-
+       
+       &.membership-start {
+    border: 2px solid #faad14; // gold border
+    background: rgba(250, 173, 20, 0.2);
+  }
+ &.membership-end {
+  background-color: #b300ff1a ; // soft purple background
+  border: 1px solid #b300ff;
+  color: #b300ff;
+  }
             .day {
                 font-weight: 500;
                 font-size: 14px;
@@ -106,6 +122,19 @@
             &.today {
                 background: #1890ff;
             }
-        }
-    }
+                   &.membership-start {
+    border: 2px solid #faad14; // gold border
+    background: rgba(250, 173, 20, 0.2);
+  }
+  &.membership-end {
+  background-color: #b300ff1a !important; // soft purple background
+  border: 1px solid #b300ff !important;
+  color: #b300ff !important;
+  }
 }
+}
+}
+
+// .legend .pill.membership-end {
+// background-color: #b300ff;
+// }

@@ -11,7 +11,7 @@ export const plans = createApi({
   endpoints: (builder) => ({
     gymPlans: builder.query({
       query: (body) =>({
-        url: `/gym/getPlan`,
+        url: `/gym/getPlan-name`,
         method: "GET",
         body
       }),

@@ -1,0 +1,45 @@
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    // background: linear-gradient(90deg, #ff8c32 0%, #ff6b00 100%);
+    color: white;
+    height: 64px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+    .header-title {
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .header-link-avatar {
+            display: flex;
+            align-items: center;
+        }
+        .header-link {
+            color: white;
+            font-weight: 500;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+        button {
+            font-weight: 500;
+            border-radius: 6px;
+        }
+    }
+}
+
+.main-content {
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px;
+    background-color: #f0f2f5;
+}

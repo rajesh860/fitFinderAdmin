@@ -7,6 +7,7 @@ import {
   Row,
   Col,
   Tag,
+  Image,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -46,10 +47,10 @@ const GymDetailPage = () => {
     return `${months} Month`;
   };
 const statusTagClr = {
-  "approved":"green",
+  "active":"green",
   "pending":"orange",
-  "reject":"red",
-  "suspended":"red"
+  "rejected":"red",
+  "inactive":"red"
 }
   return (
     <div style={{ background: "#f5f6fa" }}>
@@ -68,16 +69,26 @@ const statusTagClr = {
           <Card>
             <Space direction="vertical" style={{ width: "100%" }} size="large">
               {/* Gym Info */}
-              <div style={{ position: "relative" }}>
-                <Title level={3} style={{ margin: 0 }}>
-                  {data?.data?.name}
+              <div style={{ position: "relative",display:"flex", justifyContent:"space-between" }}>
+                <div className="left" style={{display:"flex", flexDirection:"row", gap:6}}>
+ <Title level={3} style={{ margin: 0 }}>
+  <div className="owner-img-col">
+
+                  <Image src={data?.data?.owner_image} alt="Gym Logo" style={{ width: 40, height: 40, borderRadius: 8, marginRight: 12 }} />
+  </div>
                 </Title>
-                <Text type="secondary">{data?.data?.address}</Text>
-                <div>
-                  <Text>Owner: {data?.data?.owner_name}</Text>
+                <div className="owner-prodilfe-info" style={{display:"flex", flexDirection:"column", gap:2}}>
+
+                <Text type="primary" style={{fontWeight:"bold",fontSize:16}} >{data?.data?.gymName}</Text>
+                <Text type="secondary" >{data?.data?.address}</Text>
+                <div >
+                  <Text>Owner: {data?.data?.user?.name}</Text>
                 </div>
+                </div>
+                </div>
+               
                 <Tag
-                  color={statusTagClr[data?.data?.status]}
+                  color={statusTagClr[data?.data?.user?.status]}
                   icon={<CheckCircleOutlined />}
                   style={{
                     textTransform: "uppercase",
@@ -90,22 +101,22 @@ const statusTagClr = {
                     paddingBlock: "4px",
                   }}
                 >
-                  {data?.data?.status}
+                  {data?.data?.user.status}
                 </Tag>
               </div>
 
               {/* Actions */}
               <Card>
                 <Space wrap>
-                  {data?.data?.status == "pending" ?
+                  {data?.data?.user?.status == "pending" ?
                   <Button type="primary" icon={<CheckCircleOutlined />}>
-                    Approve
+                    Active
                   </Button>
                   :""}
                   <Button danger icon={<CloseCircleOutlined />}>
-                    Reject
+                    InActive
                   </Button>
-                  <Button icon={<StopOutlined />}>Suspend</Button>
+                  {/* <Button icon={<StopOutlined />}>Suspend</Button> */}
                   <Button danger icon={<DeleteOutlined />}>
                     Delete
                   </Button>
@@ -145,7 +156,7 @@ const statusTagClr = {
                 <Title level={5} style={{ margin: 0 }}>
                   Membership Plan
                 </Title>
-                <div style={{ marginTop: "12px", display: "flex", flexWrap: "wrap", gap: "12px" }}>
+                <div style={{ marginTop: "12px", display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px" }}>
                   {data?.data?.plans?.map((plan, i) => {
                     const style = planStyles[plan.planName] || {
                       bg: "linear-gradient(135deg, #ccc, #999)",
@@ -153,7 +164,7 @@ const statusTagClr = {
                     };
 
                     return (
-                    <MembershipCard data={plan}/>
+                    <MembershipCard data={plan} editMode={false}/>
                     );
                   })}
                 </div>
@@ -173,11 +184,11 @@ const statusTagClr = {
                 Contact Information
               </Title>
               <p>
-                <PhoneOutlined /> <Text>{data?.data?.contact}</Text>
+                <PhoneOutlined /> <Text>{data?.data?.user?.phone}</Text>
               </p>
               <p>
                 <MailOutlined />{" "}
-                <a href="mailto:contact@powerfitgym.com">{data?.data?.email}</a>
+                <a href="mailto:contact@powerfitgym.com">{data?.data?.user?.email}</a>
               </p>
               <p>
                 <EnvironmentOutlined />{data?.data?.address} <br />

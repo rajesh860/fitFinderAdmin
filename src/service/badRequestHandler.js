@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 
 export const dynamicBaseQuery = async (args, WebApi, extraOptions) => {
   const rawBaseQuery = fetchBaseQuery({
+    // baseUrl: "http://192.168.1.34:3001",
     baseUrl: "http://localhost:3001",
     // baseUrl: "https://exchthanos.com/api/",
     headers: {
@@ -20,10 +21,10 @@ export const dynamicBaseQuery = async (args, WebApi, extraOptions) => {
       toast.error(responseMessage);
     }
   }
-  // if (result?.data.status === 200 || result?.data.status) {
-  //   // toast.success(result?.data?.message);
-  // } else if (result?.data.status === false) {
-  //   // toast.error(result?.data?.message);
-  // }
+  if (result?.data.status === 200 || result?.data.status) {
+    toast.success(result?.data?.message);
+  } else if (result?.data.status === false) {
+    toast.error(result?.data?.message);
+  }
   return result;
 };

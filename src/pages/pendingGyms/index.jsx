@@ -6,37 +6,26 @@ import { toast } from "react-toastify";
 
 const AllPendingGymList = () => {
   const [searchText, setSearchText] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalImages, setModalImages] = useState([]);
-  const [modalGymName, setModalGymName] = useState("");
+
 
   const { data: gyms, isLoading: loading } = useGymPendingListQuery();
 const [trigger,{data:approved}] = useApprovedGymMutation()
 const [trigg,{data:rejected}] = useRejectedGymMutation()
-  const openImagesModal = (images, name) => {
-    setModalImages(images);
-    setModalGymName(name);
-    setIsModalOpen(true);
-  };
+
 
   // Approve gym function
   const handleApprove = (gymId, gymName) => {
-
     trigger(gymId)
-   
   };
 
   // Reject gym function
   const handleReject = (gymId, gymName) => {
-   
-
     trigg(gymId)
-   
   };
 
   const columns = [
     {
-      title: "Gym Name",
+      title: "Owner Name",
       dataIndex: "name",
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
@@ -49,25 +38,10 @@ const [trigg,{data:rejected}] = useRejectedGymMutation()
     },
     {
       title: "Contact",
-      dataIndex: "contact",
-      key: "contact",
+      dataIndex: "phone",
+      key: "phone",
     },
-    {
-      title: "Location",
-      dataIndex: "address",
-      key: "address",
-      render: (text) => <strong>{text}</strong>,
-    },
-    {
-      title: "Images",
-      dataIndex: "images",
-      key: "images",
-      render: (images, record) => (
-        <a onClick={() => openImagesModal(images, record.name)}>
-          {images.length} Image{images.length > 1 ? "s" : ""}
-        </a>
-      ),
-    },
+ 
     {
       title: "Status",
       dataIndex: "status",
@@ -131,7 +105,7 @@ const [trigg,{data:rejected}] = useRejectedGymMutation()
     },
   ];
 
-  const filteredData = gyms?.filter(
+  const filteredData = gyms?.data?.filter(
     (gym) =>
       gym.name.toLowerCase().includes(searchText.toLowerCase()) ||
       gym.email.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -191,27 +165,7 @@ if(approved?.success || rejected?.success){
         bordered
       />
 
-      {/* Images Modal */}
-      <Modal
-        title={modalGymName}
-        open={isModalOpen}
-        footer={null}
-        onCancel={() => setIsModalOpen(false)}
-        width={600}
-        className="custom-carousel-modal"
-      >
-        <Carousel arrows>
-          {modalImages.map((img, idx) => (
-            <div key={idx} style={{ textAlign: "center" }}>
-              <img
-                src={img}
-                alt={`${modalGymName} ${idx + 1}`}
-                style={{ maxWidth: "100%", maxHeight: "400px", margin: "0 auto" }}
-              />
-            </div>
-          ))}
-        </Carousel>
-      </Modal>
+     
 
     
     </div>

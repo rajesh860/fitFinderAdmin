@@ -16,7 +16,7 @@ export const allUser = createApi({
     }),
     getUserDetail: builder.query({
       query: (id) =>({
-        url: `/user/${id}`,
+        url: `/gym/users/${id}`,
         method: "GET",
       })
     }),

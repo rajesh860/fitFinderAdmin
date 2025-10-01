@@ -19,7 +19,7 @@ const featureColors = {
   3: { color: "#FEF3E2", text: "#C06A00" },
 };
 
-const MembershipCard = ({  data}) => {
+const MembershipCard = ({  data,editMode}) => {
   const {planName:title, price, durationInMonths:duration, features, created_at:createdDate } = data
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
@@ -148,7 +148,7 @@ const MembershipCard = ({  data}) => {
   })}
 
   {/* Overlay for ... if overflow */}
-  {features.length > 4 && ( // approx 2 rows me 4-5 features fit
+  {/* {features.length > 4 && ( // approx 2 rows me 4-5 features fit
     <div
       style={{
         position: "absolute",
@@ -161,7 +161,7 @@ const MembershipCard = ({  data}) => {
     >
       ...
     </div>
-  )}
+  )} */}
 </div>
 
 
@@ -172,6 +172,7 @@ const MembershipCard = ({  data}) => {
             <div>
               Created: <span style={{ fontWeight: 500 }}>{moment(createdDate).format("DD-MM-YYYY")}</span>
               </div>  
+          {editMode&&
           <Button
             type="primary"
             icon={<EditOutlined />}
@@ -185,6 +186,7 @@ const MembershipCard = ({  data}) => {
           >
             Edit
           </Button>
+          }
         </div>
       </Card>
 

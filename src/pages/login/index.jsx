@@ -8,7 +8,10 @@ const { Title, Text } = Typography;
 
 const LoginPage = () => {
   const nav = useNavigate()
+  
   const [trigger,{data}]= useLoginMutation()
+
+
   const onFinish = (values) => {
     console.log("Login Data:", values);
     trigger(values)
@@ -17,6 +20,7 @@ useEffect(()=>{
 if(data?.token){
 toast.success(data?.message)
 localStorage.setItem("token",data?.token)
+localStorage.setItem("userRole",data?.user?.userRole)
 nav("/")
 }else{
   toast.error(data?.message)

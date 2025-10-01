@@ -75,7 +75,7 @@ const CreatePlanForm = () => {
         features,
       };
 
-      console.log('Final Payload:', planData);
+      // console.log('Final Payload:', planData);
 
       await trigger(planData).unwrap();
 

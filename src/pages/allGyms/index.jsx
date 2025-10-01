@@ -41,15 +41,17 @@ const AllGymList = () => {
   const columns = [
     {
       title: "Gym Name",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "gymName",
+      key: "gymName",
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text) => <strong>{text}</strong>,
     },
     {
       title: "Email",
-      dataIndex: "email",
-      key: "email",
+      dataIndex: "user",
+      key: "user",
+       sorter: (a, b) => a.name.localeCompare(b.email),
+      render: (text) => <strong>{text.email}</strong>,
     },
     {
       title: "Contact",
@@ -74,18 +76,18 @@ const AllGymList = () => {
     },
     {
       title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => (
-        <Tag color={status === "approved" ? "green" : "red"}>
-          {status.toUpperCase()}
+      dataIndex: "user",
+      key: "user",
+      render: (user) => (
+        <Tag color={user.status === "active" ? "green" : "red"}>
+          {user.status.toUpperCase()}
         </Tag>
       ),
       filters: [
-        { text: "Approved", value: "approved" },
-        { text: "Suspended", value: "suspended" },
+        { text: "Active", value: "active" },
+        { text: "Inactive", value: "inactive" },
       ],
-      onFilter: (value, record) => record.status === value,
+      onFilter: (value, record) => record.user.status === value,
     },
     {
       title: "Action",
@@ -93,21 +95,21 @@ const AllGymList = () => {
       render: (_, record) => (
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
           {/* Status Toggle Switch */}
-          <Tooltip title={record.status === "approved" ? "Suspend Gym" : "Approve Gym"}>
+          <Tooltip title={record.user.status === "active" ? "Inactive Gym" : "Active Gym"}>
             <Popconfirm
-              title={`${record.status === "approved" ? "Suspend" : "Approve"} Gym`}
-              description={`Are you sure you want to ${record.status === "approved" ? "suspend" : "approve"} ${record.name}?`}
-              onConfirm={() => handleStatusChange(record._id, record.status, record.name)}
+              title={`${record.user.status === "active" ? "Inactive" : "Active"} Gym`}
+              description={`Are you sure you want to ${record.user.status === "active" ? "Inactive" : "Active"} ${record.user.name}?`}
+              onConfirm={() => handleStatusChange(record._id, record.user.status, record.user.name)}
               okText="Yes"
               cancelText="No"
-              okType={record.status === "approved" ? "danger" : "primary"}
+              okType={record.user.status === "active" ? "danger" : "primary"}
             >
               <Switch
-                checked={record.status === "approved"}
+                checked={record.user.status === "active"}
                 checkedChildren={<PlayCircleOutlined />}
                 unCheckedChildren={<PauseOutlined />}
                 style={{
-                  backgroundColor: record.status === "approved" ? "#52c41a" : "#ff4d4f"
+                  backgroundColor: record.user.status === "active" ? "#52c41a" : "#ff4d4f"
                 }}
               />
             </Popconfirm>
@@ -128,7 +130,7 @@ const AllGymList = () => {
 
   const filteredData = gyms?.data?.filter(
     (gym) =>
-      gym.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      gym.gymName.toLowerCase().includes(searchText.toLowerCase()) ||
       gym.email.toLowerCase().includes(searchText.toLowerCase()) ||
       gym.contact.includes(searchText)
   );

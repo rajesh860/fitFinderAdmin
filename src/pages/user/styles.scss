@@ -1,53 +1,57 @@
-.member-profile-wrapper {
-    display: flex;
-    flex-direction: column;
-    // gap: 1.8rem;
-    .title-card{
-        .ant-card-body{
-            // display: none;
-            padding: 0%;
-          
-            background-color: transparent;
+.user-profile-container{
+    width: 95%;
+    margin: auto;
+    .member-profile-wrapper {
+        display: flex;
+        flex-direction: column;
+        // gap: 1.8rem;
+        .title-card{
+            .ant-card-body{
+                // display: none;
+                padding: 0%;
+              
+                background-color: transparent;
+            }
         }
-    }
-    .profile-header-con{
-        background-color: white;
-    }
-
-    .calendar-con {
-        background-color: white;
-
-        .calendar-card {
-            box-shadow: none;
-            border-radius: 0;
-
-            .ant-card-body {
-                border: none;
+        .profile-header-con{
+            background-color: white;
+        }
+    
+        .calendar-con {
+            background-color: white;
+    
+            .calendar-card {
+                box-shadow: none;
                 border-radius: 0;
-                padding: 0;
-                margin: 0 12px;
-                display: flex;
-                gap: 1rem;
-                padding-bottom: 40px;
-
-                .calender-main {
-                    max-width: calc(100% - 35%);
-                    background-color: #f9f9f9;
+    
+                .ant-card-body {
+                    border: none;
+                    border-radius: 0;
+                    padding: 0;
+                    margin: 0 12px;
+                    display: flex;
+                    gap: 1rem;
+                    padding-bottom: 40px;
+    
+                    .calender-main {
+                        max-width: calc(100% - 35%);
+                        background-color: #f9f9f9;
+                    }
+    
+    
+                    .summary-cards {
+                        width: 100%;
+                    }
                 }
-
-
-                .summary-cards {
-                    width: 100%;
+    
+                .ant-picker-calendar,
+                .ant-picker-panel {
+                    background: transparent;
                 }
-            }
-
-            .ant-picker-calendar,
-            .ant-picker-panel {
-                background: transparent;
-            }
-
-            .ant-picker-body {
-                padding: 8px;
+    
+                .ant-picker-body {
+                    padding: 8px;
+                }
             }
         }
     }

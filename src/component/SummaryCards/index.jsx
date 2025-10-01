@@ -59,6 +59,7 @@ function Goal({ completed, target }) {
 }
 
 export default function SummaryCards({ summary, insights, goal }) {
+console.log(insights,"insights")
   return (
     <div className="summary-stack">
       <Summary
