@@ -1,29 +1,45 @@
-.user-profile-container{
-    width: 95%;
+.user-profile-container {
+    // width: 95%;
     margin: auto;
+    background-color: transparent;
     .member-profile-wrapper {
         display: flex;
         flex-direction: column;
-        // gap: 1.8rem;
-        .title-card{
-            .ant-card-body{
-                // display: none;
+
+        .title-card {
+            background-color: transparent;
+            border: none;
+
+            .ant-card-head {
+                background-color: transparent;
+                border-bottom: none;
+
+                .ant-card-head-title {
+                    color: #ffffff;
+                    font-weight: 600;
+                }
+            }
+
+            .ant-card-body {
                 padding: 0%;
-              
                 background-color: transparent;
             }
         }
-        .profile-header-con{
-            background-color: white;
+
+        .profile-header-con {
+            background-color: #1f1f1f;
         }
-    
+
         .calendar-con {
-            background-color: white;
-    
+            background-color: #1f1f1f;
+            margin-top: 16px;
+
             .calendar-card {
                 box-shadow: none;
                 border-radius: 0;
-    
+                background-color: #1f1f1f;
+                border: 1px solid #333;
+
                 .ant-card-body {
                     border: none;
                     border-radius: 0;
@@ -32,27 +48,181 @@
                     display: flex;
                     gap: 1rem;
                     padding-bottom: 40px;
-    
+                    background-color: #1f1f1f;
+
                     .calender-main {
                         max-width: calc(100% - 35%);
-                        background-color: #f9f9f9;
+                        background-color: #141414;
+                        border-radius: 8px;
+                        padding: 16px;
+                        border: 1px solid #333;
                     }
-    
-    
+
                     .summary-cards {
                         width: 100%;
                     }
                 }
-    
+
                 .ant-picker-calendar,
                 .ant-picker-panel {
                     background: transparent;
+
+                    .ant-picker-calendar-header {
+                        background: #141414;
+                        border-bottom: 1px solid #333;
+
+                        .ant-picker-calendar-year-select,
+                        .ant-picker-calendar-month-select {
+                            color: #ffffff;
+
+                            .ant-select-selector {
+                                background-color: #1f1f1f;
+                                border: 1px solid #333;
+                                color: #ffffff;
+                            }
+                        }
+                    }
                 }
-    
+
                 .ant-picker-body {
                     padding: 8px;
+
+                    .ant-picker-content {
+                        thead {
+                            tr {
+                                th {
+                                    color: #999 !important;
+                                }
+                            }
+                        }
+
+                        tbody {
+                            tr {
+                                td {
+                                    .ant-picker-cell-inner {
+                                        color: #ffffff;
+                                    }
+
+                                    &.ant-picker-cell-selected {
+                                        .ant-picker-cell-inner {
+                                            background: #1890ff;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
+        }
+    }
+}
+
+// Dark theme for calendar cells
+.attendance-cal {
+    .ant-picker-cell {
+        .ant-picker-cell-inner {
+            color: #ffffff !important;
+        }
+
+        &.ant-picker-cell-today {
+            .ant-picker-cell-inner {
+                &::before {
+                    border: 1px solid #1890ff !important;
+                }
+            }
+        }
+    }
+}
+
+// Dark theme for progress table
+.ant-table {
+    background-color: #1f1f1f !important;
+
+    .ant-table-thead {
+        tr {
+            th {
+                background-color: #141414 !important;
+                color: #ffffff !important;
+                border-bottom: 1px solid #333 !important;
+            }
+        }
+    }
+
+    .ant-table-tbody {
+        tr {
+            td {
+                background-color: #1f1f1f !important;
+                color: #ffffff !important;
+                border-bottom: 1px solid #333 !important;
+            }
+
+            &:hover {
+                td {
+                    background-color: #2a2a2a !important;
+                }
+            }
+        }
+    }
+}
+
+// Dark theme for summary cards
+.summary-cards {
+    .ant-card {
+        background-color: #1f1f1f;
+        border: 1px solid #333;
+
+        .ant-card-head {
+            background-color: transparent;
+            border-bottom: 1px solid #333;
+
+            .ant-card-head-title {
+                color: #ffffff;
+            }
+        }
+
+        .ant-card-body {
+            background-color: #1f1f1f;
+            color: #ffffff;
+        }
+    }
+}
+
+// Dark theme for date filters
+.date-filters {
+    .ant-radio-group {
+        .ant-radio-button-wrapper {
+            background-color: #1f1f1f;
+            color: #ffffff;
+            border: 1px solid #333;
+
+            &:hover {
+                background-color: #2a2a2a;
+            }
+
+            &.ant-radio-button-wrapper-checked {
+                background-color: #1890ff;
+                border-color: #1890ff;
+            }
+        }
+    }
+
+    .ant-picker {
+        background-color: #1f1f1f;
+        border: 1px solid #333;
+
+        .ant-picker-input {
+            input {
+                color: #ffffff;
+
+                &::placeholder {
+                    color: #666;
+                }
+            }
+        }
+
+        .ant-picker-suffix {
+            color: #999;
         }
     }
 }

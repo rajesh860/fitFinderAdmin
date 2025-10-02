@@ -9,57 +9,72 @@ export default function AttendanceCalendar({
   setMonthDate,
   attendance = [],
   membershipStart,
-  membership_end
+  membership_end,
 }) {
-  // ✅ Membership start date (start of day)
-  const membershipStartDate = membershipStart ? dayjs(membershipStart).startOf("day") : null;
+  // Membership start date
 
-  // ✅ Membership end date (start of day)
-  const membershipEndDate = membership_end ? dayjs(membership_end).startOf("day") : null;
+  console.log(membershipStart, membership_end, "date");
+  const membershipStartDate = membershipStart
+    ? dayjs(membershipStart).startOf("day")
+    : null;
 
-  // ✅ Convert attendance array to map for quick lookup
+  // Membership end date
+  const membershipEndDate = membership_end
+    ? dayjs(membership_end).startOf("day")
+    : null;
+
+  // Convert attendance array to map
   const attendanceMap = attendance.reduce((acc, item) => {
     const key = dayjs(item.date).format("YYYY-MM-DD");
     acc[key] = item.status; // "present" or "absent"
     return acc;
   }, {});
 
-  // ----- Month navigation
+  // Month navigation
   const handlePrevMonth = () => setMonthDate(monthDate.subtract(1, "month"));
   const handleNextMonth = () => setMonthDate(monthDate.add(1, "month"));
 
-  // ----- Render custom cell
+  // Custom date cell render
   const dateFullCellRender = (value) => {
     const key = value.format("YYYY-MM-DD");
     const status = attendanceMap[key];
     const isToday = dayjs().isSame(value, "day");
-    const isMembershipStart = membershipStartDate ? value.isSame(membershipStartDate, "day") : false;
-    const isMembershipEnd = membershipEndDate ? value.isSame(membershipEndDate, "day") : false;
+    const isMembershipStart = membershipStartDate
+      ? value.isSame(membershipStartDate, "day")
+      : false;
+    const isMembershipEnd = membershipEndDate
+      ? value.isSame(membershipEndDate, "day")
+      : false;
 
     let cellClass = "cell";
 
-    // ✅ Membership start takes priority if same day
+    // ✅ Membership start and end have highest priority
     if (isMembershipStart) {
       cellClass += " membership-start";
-    } 
-    // ✅ Membership end only if not same as start
-    else if (isMembershipEnd) {
+    } else if (isMembershipEnd) {
       cellClass += " membership-end";
-    } 
-    // ✅ Automatic absent for days after start but before today AND before end
+    }
+    // ✅ Attendance present
+    else if (status === "present") {
+      cellClass += " present";
+    }
+    // ✅ Automatic absent (only within membership period and before today)
     else if (
       membershipStartDate &&
       value.isAfter(membershipStartDate, "day") &&
       value.isBefore(dayjs(), "day") &&
-      (!membershipEndDate || value.isBefore(membershipEndDate, "day"))
+      (!membershipEndDate ||
+        value.isBefore(membershipEndDate, "day") ||
+        value.isSame(membershipEndDate, "day"))
     ) {
       cellClass += " absent";
-    } 
+    }
+    // Future / empty days
     else {
-      cellClass += " empty"; // future/unmarked
+      cellClass += " empty";
     }
 
-    // ✅ Today highlight
+    // ✅ Highlight today (can combine with other classes)
     if (isToday) cellClass += " today";
 
     return (
@@ -69,7 +84,7 @@ export default function AttendanceCalendar({
     );
   };
 
-  // ----- Custom month header
+  // Custom month header
   const headerRender = () => (
     <div className="calendar-header">
       <div className="title">
@@ -92,7 +107,7 @@ export default function AttendanceCalendar({
         className="attendance-cal"
       />
 
-      {/* ✅ Legend section */}
+      {/* Legend */}
       <div className="legend">
         <span className="pill present" /> Present
         <span className="pill absent" /> Absent

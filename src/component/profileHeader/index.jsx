@@ -8,7 +8,7 @@ import {
 import "./styles.scss";
 import dayjs from "dayjs";
 
-export default function ProfileHeader({ user ,progress}) {
+export default function ProfileHeader({ user, progress }) {
   const label = (t, v) => (
     <div className="ph__item">
       <div className="ph__label">{t}</div>
@@ -50,7 +50,11 @@ export default function ProfileHeader({ user ,progress}) {
               </div>
               <div className="ph__valid">
                 Valid until:{" "}
-                <b>{dayjs(user?.currentMembership?.membership_end).format("DD-MM-YYYY")}</b>
+                <b>
+                  {dayjs(user?.currentMembership?.membership_end).format(
+                    "DD-MM-YYYY"
+                  )}
+                </b>
               </div>
             </div>
           </Col>
@@ -75,82 +79,81 @@ export default function ProfileHeader({ user ,progress}) {
       </Card>
 
       {/* ✅ Progress Section */}
-     {/* Progress Section */}
-{/* Progress Section */}
-<Card
-  className="progress-card"
-  bordered={false}
-  title={
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <AimOutlined style={{ color: "#2563eb" }} />
-      <span>User Current Progress</span>
-    </div>
-  }
->
-  <div
-    style={{
-      display: "flex",
-      gap: 16,
-      justifyContent: "space-around",
-      overflowX: "auto",
-      padding: "12px 0",
-      maxWidth: "100%",
-    }}
-  >
-    {progressData.map((item) => {
-      // ✅ Dynamic background color based on title
-      let bgColor = "#f3f4f6"; // default gray
-      switch (item.title) {
-        case "Weight":
-          bgColor = "#ffe4e6"; // pinkish
-          break;
-        case "Height":
-          bgColor = "#e0f7fa"; // light cyan
-          break;
-        case "Arm":
-          bgColor = "#fff3e0"; // light orange
-          break;
-        case "Chest":
-          bgColor = "#ede7f6"; // light purple
-          break;
-        case "Waist":
-          bgColor = "#e8f5e9"; // light green
-          break;
-        case "Thigh":
-          bgColor = "#fce4ec"; // light pink
-          break;
-        default:
-          bgColor = "#f3f4f6";
-      }
-
-      return (
+      {/* Progress Section */}
+      {/* Progress Section */}
+      <Card
+        className="progress-card"
+        bordered={false}
+        title={
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <AimOutlined style={{ color: "#2563eb" }} />
+            <span>User Current Progress</span>
+          </div>
+        }
+      >
         <div
-          key={item.title}
           style={{
-            minWidth: 100,
-            backgroundColor: bgColor,
-            borderRadius: 8,
-            width: 200,
-            height: 100,
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+            gap: 16,
+            justifyContent: "space-around",
+            overflowX: "auto",
+            padding: "12px 0",
+            maxWidth: "100%",
           }}
         >
-          <div style={{ fontWeight: "700", fontSize: 16, color: "#111" }}>
-            {item.value}{item.unit}
-          </div>
-          <div style={{ fontSize: 12, color: "#555" }}>{item.title}</div>
+          {progressData.map((item) => {
+            // ✅ Dynamic background color based on title
+            let bgColor = "#f3f4f6"; // default gray
+            switch (item.title) {
+              case "Weight":
+                bgColor = "#ffe4e6"; // pinkish
+                break;
+              case "Height":
+                bgColor = "#e0f7fa"; // light cyan
+                break;
+              case "Arm":
+                bgColor = "#fff3e0"; // light orange
+                break;
+              case "Chest":
+                bgColor = "#ede7f6"; // light purple
+                break;
+              case "Waist":
+                bgColor = "#e8f5e9"; // light green
+                break;
+              case "Thigh":
+                bgColor = "#fce4ec"; // light pink
+                break;
+              default:
+                bgColor = "#f3f4f6";
+            }
+
+            return (
+              <div
+                key={item.title}
+                style={{
+                  minWidth: 100,
+                  backgroundColor: bgColor,
+                  borderRadius: 8,
+                  width: 200,
+                  height: 100,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                }}
+              >
+                <div style={{ fontWeight: "700", fontSize: 16, color: "#111" }}>
+                  {item.value}
+                  {item.unit}
+                </div>
+                <div style={{ fontSize: 12, color: "#555" }}>{item.title}</div>
+              </div>
+            );
+          })}
         </div>
-      );
-    })}
-  </div>
-</Card>
-
-
+      </Card>
     </>
   );
 }
