@@ -13,7 +13,9 @@ const CompletedEnquiry = () => {
       title: "User Name",
       key: "userName",
       render: (_, record) => (
-        <strong>{`${record.userId?.first_name || ""} ${record.userId?.last_name || ""}`}</strong>
+        <strong>{`${record.userId?.first_name || ""} ${
+          record.userId?.last_name || ""
+        }`}</strong>
       ),
     },
     {
@@ -55,17 +57,24 @@ const CompletedEnquiry = () => {
     },
   ];
 
-  const filteredData = data?.data?.filter((item) =>
-    (item.userId?.first_name || "").toLowerCase().includes(searchText.toLowerCase()) ||
-    (item.userId?.last_name || "").toLowerCase().includes(searchText.toLowerCase()) ||
-    (item.userId?.email || "").toLowerCase().includes(searchText.toLowerCase()) ||
-    (item.userId?.phone || "").includes(searchText) ||
-    new Date(item.date).toLocaleDateString().includes(searchText) ||
-    (item.time || "").includes(searchText)
+  const filteredData = data?.data?.filter(
+    (item) =>
+      (item.userId?.first_name || "")
+        .toLowerCase()
+        .includes(searchText.toLowerCase()) ||
+      (item.userId?.last_name || "")
+        .toLowerCase()
+        .includes(searchText.toLowerCase()) ||
+      (item.userId?.email || "")
+        .toLowerCase()
+        .includes(searchText.toLowerCase()) ||
+      (item.userId?.phone || "").includes(searchText) ||
+      new Date(item.date).toLocaleDateString().includes(searchText) ||
+      (item.time || "").includes(searchText)
   );
 
   return (
-    <div style={{ padding: 20 }}>
+    <div>
       {/* Header */}
       <div
         style={{
@@ -76,7 +85,7 @@ const CompletedEnquiry = () => {
           flexWrap: "wrap",
         }}
       >
-        <h2 style={{ margin: 0 }}>Completed Enquiries</h2>
+        <h2 style={{ margin: 0, color: "white" }}>Completed Enquiries</h2>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <Breadcrumb>
@@ -98,14 +107,16 @@ const CompletedEnquiry = () => {
       </div>
 
       {/* Table */}
-      <Table
-        columns={columns}
-        dataSource={filteredData}
-        rowKey={(record) => record._id}
-        loading={loading}
-        pagination={{ pageSize: 10 }}
-        bordered
-      />
+      <div className="dark-table">
+        <Table
+          columns={columns}
+          dataSource={filteredData}
+          rowKey={(record) => record._id}
+          loading={loading}
+          pagination={{ pageSize: 10 }}
+          bordered
+        />
+      </div>
     </div>
   );
 };

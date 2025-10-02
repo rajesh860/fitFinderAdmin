@@ -1,9 +1,30 @@
-import { useEffect, useState } from "react";
-import { Table, Input, Breadcrumb, Tag, Modal, Button, Popconfirm, message, Form } from "antd";
-import { HomeOutlined, SearchOutlined, CheckOutlined, CloseOutlined, CheckCircleOutlined } from "@ant-design/icons";
-import { useApproveEnquiryMutation, useCancelEnquiryMutation, useCompleteEnquiryMutation, useGetQueryQuery } from "../../service/gyms/index";
+import { useState } from "react";
+import {
+  Table,
+  Input,
+  Breadcrumb,
+  Tag,
+  Modal,
+  Button,
+  Popconfirm,
+  message,
+  Form,
+} from "antd";
+import {
+  HomeOutlined,
+  SearchOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  CheckCircleOutlined,
+} from "@ant-design/icons";
+import {
+  useApproveEnquiryMutation,
+  useCancelEnquiryMutation,
+  useCompleteEnquiryMutation,
+  useGetQueryQuery,
+} from "../../service/gyms/index";
 import { toast } from "react-toastify";
-
+import "./styles.scss";
 const NewEnquiry = () => {
   const [searchText, setSearchText] = useState("");
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
@@ -12,22 +33,30 @@ const NewEnquiry = () => {
   const [reason, setReason] = useState("");
   const [uniqueNumber, setUniqueNumber] = useState("");
 
-  const { data, isLoading: loading } = useGetQueryQuery(['pending','upcoming']);  // Fetch data from API
-  const [trigger,{ data:cancelEnquiryResponse, isLoading }] = useCancelEnquiryMutation();  // Cancel Enquiry API
-  const [trigg,{ data:approvedEnquiryResponse, }] = useApproveEnquiryMutation();  // Cancel Enquiry API
-  const [trig,{ data:completedEnquiryResponse, }] = useCompleteEnquiryMutation();  // Cancel Enquiry API
+  const { data, isLoading: loading } = useGetQueryQuery([
+    "pending",
+    "upcoming",
+  ]); // Fetch data from API
+  const [trigger, { data: cancelEnquiryResponse, isLoading }] =
+    useCancelEnquiryMutation(); // Cancel Enquiry API
+  const [trigg, { data: approvedEnquiryResponse }] =
+    useApproveEnquiryMutation(); // Cancel Enquiry API
+  const [trig, { data: completedEnquiryResponse }] =
+    useCompleteEnquiryMutation(); // Cancel Enquiry API
 
-const handleApprove = async (record) => {
+  const handleApprove = async (record) => {
     const res = await trigg(record._id).unwrap();
 
     if (res.success) {
-      toast.success(res.message || `Approved Enquiry of ${record.userId?.first_name}`);
+      toast.success(
+        res.message || `Approved Enquiry of ${record.userId?.first_name}`
+      );
     } else {
       toast.error(res.message || "Failed to approve enquiry");
     }
-};
+  };
 
-  console.log(selectedEnquiry?._id)
+  console.log(selectedEnquiry?._id);
   const handleReject = async () => {
     if (!reason.trim()) {
       message.error("Reason is required");
@@ -54,11 +83,11 @@ const handleApprove = async (record) => {
     setReason("");
   };
 
- const handleComplete = async () => {
-  if (!uniqueNumber.trim()) {
-    message.error("Unique number is required");
-    return;
-  }
+  const handleComplete = async () => {
+    if (!uniqueNumber.trim()) {
+      message.error("Unique number is required");
+      return;
+    }
 
     const res = await trig({
       id: selectedEnquiry._id,
@@ -72,16 +101,16 @@ const handleApprove = async (record) => {
     } else {
       toast.error(res.message || "Failed to complete enquiry");
     }
-
-};
-
+  };
 
   const columns = [
     {
       title: "User Name",
       key: "userName",
       render: (_, record) => (
-        <strong>{`${record.userId?.first_name || ""} ${record.userId?.last_name || ""}`}</strong>
+        <strong>{`${record.userId?.first_name || ""} ${
+          record.userId?.last_name || ""
+        }`}</strong>
       ),
     },
     {
@@ -111,7 +140,17 @@ const handleApprove = async (record) => {
       key: "status",
       dataIndex: "status",
       render: (status) => (
-        <Tag color={status === "pending" ? "orange" : status === "completed" ? "green" : status === "cancelled" ? "red" : "blue"}>
+        <Tag
+          color={
+            status === "pending"
+              ? "orange"
+              : status === "completed"
+              ? "green"
+              : status === "cancelled"
+              ? "red"
+              : "blue"
+          }
+        >
           {status.toUpperCase()}
         </Tag>
       ),
@@ -123,72 +162,84 @@ const handleApprove = async (record) => {
       onFilter: (value, record) => record.status === value,
     },
     {
-  title: "Action",
-  key: "action",
-  render: (_, record) => (
-    <div style={{ display: "flex", gap: "8px" }}>
-      {/* Approve Button */}
-      <Popconfirm
-        title="Are you sure to approve this enquiry?"
-        onConfirm={() => handleApprove(record)}
-        okText="Yes"
-        cancelText="No"
-        disabled={record.status === "upcoming"} // ✅ upcoming में approve भी disable कर सकते हो अगर जरूरत हो
-      >
-          {record.status !== "upcoming" && ( 
-        <Button 
-          type="primary" 
-          icon={<CheckOutlined />} 
-          size="small" 
-          disabled={record.status === "upcoming"} // ✅ upcoming में approve disable
-        />
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <div style={{ display: "flex", gap: "8px" }}>
+          {/* Approve Button */}
+          <Popconfirm
+            title="Are you sure to approve this enquiry?"
+            onConfirm={() => handleApprove(record)}
+            okText="Yes"
+            cancelText="No"
+            disabled={record.status === "upcoming"} // ✅ upcoming में approve भी disable कर सकते हो अगर जरूरत हो
+          >
+            {record.status !== "upcoming" && (
+              <Button
+                type="primary"
+                icon={<CheckOutlined />}
+                size="small"
+                disabled={record.status === "upcoming"} // ✅ upcoming में approve disable
+              />
+            )}
+          </Popconfirm>
+
+          {/* Reject Button */}
+          {record.status !== "upcoming" && ( // ✅ upcoming में reject button hide
+            <Button
+              danger
+              icon={<CloseOutlined />}
+              size="small"
+              onClick={() => {
+                setSelectedEnquiry(record);
+                setIsRejectModalOpen(true);
+              }}
+            />
           )}
-      </Popconfirm>
 
-      {/* Reject Button */}
-      {record.status !== "upcoming" && (   // ✅ upcoming में reject button hide
-        <Button
-          danger
-          icon={<CloseOutlined />}
-          size="small"
-          onClick={() => {
-            setSelectedEnquiry(record);
-            setIsRejectModalOpen(true);
-          }}
-        />
-      )}
-
-      {/* Completed Button */}
-      <Button
-        icon={<CheckCircleOutlined />}
-        size="small"
-        onClick={() => {
-          setSelectedEnquiry(record);
-          setIsCompleteModalOpen(true);
-        }}
-      />
-    </div>
-  ),
-}
-
+          {/* Completed Button */}
+          <Button
+            icon={<CheckCircleOutlined />}
+            size="small"
+            onClick={() => {
+              setSelectedEnquiry(record);
+              setIsCompleteModalOpen(true);
+            }}
+          />
+        </div>
+      ),
+    },
   ];
 
-  const filteredData = data?.data?.filter((item) =>
-    (item.userId?.first_name || "").toLowerCase().includes(searchText.toLowerCase()) ||
-    (item.userId?.last_name || "").toLowerCase().includes(searchText.toLowerCase()) ||
-    (item.userId?.email || "").toLowerCase().includes(searchText.toLowerCase()) ||
-    (item.userId?.phone || "").includes(searchText) ||
-    new Date(item.date).toLocaleDateString().includes(searchText) ||
-    (item.time || "").includes(searchText)
+  const filteredData = data?.data?.filter(
+    (item) =>
+      (item.userId?.first_name || "")
+        .toLowerCase()
+        .includes(searchText.toLowerCase()) ||
+      (item.userId?.last_name || "")
+        .toLowerCase()
+        .includes(searchText.toLowerCase()) ||
+      (item.userId?.email || "")
+        .toLowerCase()
+        .includes(searchText.toLowerCase()) ||
+      (item.userId?.phone || "").includes(searchText) ||
+      new Date(item.date).toLocaleDateString().includes(searchText) ||
+      (item.time || "").includes(searchText)
   );
 
- 
-
   return (
-    <div style={{ padding: 20 }}>
+    <div>
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap" }}>
-        <h2 style={{ margin: 0 }}>New Enquiries</h2>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 16,
+          flexWrap: "wrap",
+        }}
+      >
+        <h2 style={{ margin: 0, color: "white" }}>New Enquiries</h2>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <Breadcrumb>
@@ -210,14 +261,22 @@ const handleApprove = async (record) => {
       </div>
 
       {/* Table */}
-      <Table
-        columns={columns}
-        dataSource={filteredData}
-        rowKey={(record) => record._id}
-        loading={loading}
-        pagination={{ pageSize: 10 }}
-        bordered
-      />
+      <div className="dark-table">
+        <Table
+          columns={columns}
+          dataSource={filteredData}
+          rowKey={(record) => record._id}
+          loading={loading}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: false,
+            itemRender: (_, type, originalElement) => originalElement,
+          }}
+          bordered
+          style={{ background: "#0D0D0D", color: "#fff", borderColor: "#333" }}
+          rowClassName={() => "dark-table-row"}
+        />
+      </div>
 
       {/* Reject Modal */}
       <Modal

@@ -12,16 +12,19 @@ import {
   Form,
 } from "antd";
 import { HomeOutlined, SearchOutlined } from "@ant-design/icons";
-import { useBookingApproveMutation, useGetBookingEnquiryQuery } from "../../service/gyms/index";
-import { useGymPlansQuery } from "../../service/plans/indx";
+import {
+  useBookingApproveMutation,
+  useGetBookingEnquiryQuery,
+} from "../../service/gyms/index";
+import { useGetMyPlanQuery } from "../../service/plans/indx";
 import { toast } from "react-toastify";
 // import { useUpdateBookingStatusMutation } from "../../service/gyms/index";
 
 const BookingEnquiry = () => {
   const [searchText, setSearchText] = useState("");
   const { data, isLoading: loading, refetch } = useGetBookingEnquiryQuery();
-  const { data:gymPlan} = useGymPlansQuery();
-  const [trigger,{ data:approve}] = useBookingApproveMutation();
+  const { data: gymPlan } = useGetMyPlanQuery();
+  const [trigger, { data: approve }] = useBookingApproveMutation();
   // const [updateStatus] = useUpdateBookingStatusMutation(); // ✅ custom RTK query/mutation for status update
 
   // 🔹 New states for modal & plan selection
@@ -33,8 +36,8 @@ const BookingEnquiry = () => {
     try {
       // 🔸 Example API call (uncomment when mutation added)
       // await updateStatus({ id: recordId, status, plan }).unwrap();
-console.log({planId:selectedPlan,id:recordId})
-trigger({planId:selectedPlan,id:recordId})
+      console.log({ planId: selectedPlan, id: recordId });
+      trigger({ planId: selectedPlan, id: recordId });
       // message.success(`Booking ${status} successfully${plan ? ` with ${plan} plan` : ""}`);
       // refetch(); // refresh table after update
       // setIsModalOpen(false);
@@ -80,7 +83,15 @@ trigger({planId:selectedPlan,id:recordId})
       key: "status",
       dataIndex: "status",
       render: (status) => (
-        <Tag color={status === "approved" ? "green" : status === "rejected" ? "red" : "blue"}>
+        <Tag
+          color={
+            status === "approved"
+              ? "green"
+              : status === "rejected"
+              ? "red"
+              : "blue"
+          }
+        >
           {status.toUpperCase()}
         </Tag>
       ),
@@ -115,32 +126,36 @@ trigger({planId:selectedPlan,id:recordId})
     },
   ];
 
-  const filteredData = data?.data?.filter((item) =>
-    (item.user?.name || "").toLowerCase().includes(searchText.toLowerCase()) ||
-    (item.user?.email || "").toLowerCase().includes(searchText.toLowerCase()) ||
-    (item.user?.phone || "").includes(searchText) ||
-    new Date(item.requestedAt).toLocaleDateString().includes(searchText) ||
-    new Date(item.requestedAt).toLocaleTimeString().includes(searchText)
+  const filteredData = data?.data?.filter(
+    (item) =>
+      (item.user?.name || "")
+        .toLowerCase()
+        .includes(searchText.toLowerCase()) ||
+      (item.user?.email || "")
+        .toLowerCase()
+        .includes(searchText.toLowerCase()) ||
+      (item.user?.phone || "").includes(searchText) ||
+      new Date(item.requestedAt).toLocaleDateString().includes(searchText) ||
+      new Date(item.requestedAt).toLocaleTimeString().includes(searchText)
   );
- const plngBg = {
-    BASIC: 'blue',
-    SILVER: 'gray',
-    GOLD: 'gold',
-    PLATINUM: 'green',
+  const plngBg = {
+    BASIC: "blue",
+    SILVER: "gray",
+    GOLD: "gold",
+    PLATINUM: "green",
   };
 
-
   useEffect(() => {
-if(approve?.success){
-  toast.success(approve?.message)
-  refetch();
-  setIsModalOpen(false);
-  setSelectedRecord(null);
-  setSelectedPlan(null);
-}else if(approve && !approve?.success){
-  toast.error(approve?.message)
-}
-  }, [approve])
+    if (approve?.success) {
+      toast.success(approve?.message);
+      refetch();
+      setIsModalOpen(false);
+      setSelectedRecord(null);
+      setSelectedPlan(null);
+    } else if (approve && !approve?.success) {
+      toast.error(approve?.message);
+    }
+  }, [approve]);
   return (
     <div style={{ padding: 20 }}>
       {/* Header */}
@@ -197,7 +212,9 @@ if(approve?.success){
       >
         <Form
           layout="vertical"
-          onFinish={() => handleStatusChange(selectedRecord._id, "approved", selectedPlan)}
+          onFinish={() =>
+            handleStatusChange(selectedRecord._id, "approved", selectedPlan)
+          }
         >
           <Form.Item
             label="Select Plan"
@@ -210,18 +227,13 @@ if(approve?.success){
               onChange={(value) => setSelectedPlan(value)}
             >
               {/* 🔸 Static Plans (Can be Dynamic Later) */}
-              {gymPlan?.map((item)=>{
-                return(
-
-                  <Select.Option value={item?._id} >
-                    <Tag color={plngBg[item?.name]}>
-
-                    {item?.name}
-                    </Tag>
-                    </Select.Option>
-                )
+              {gymPlan?.map((item) => {
+                return (
+                  <Select.Option value={item?._id}>
+                    <Tag color={plngBg[item?.name]}>{item?.name}</Tag>
+                  </Select.Option>
+                );
               })}
-          
             </Select>
           </Form.Item>
 

@@ -110,7 +110,7 @@ const SidebarMenu = () => {
     {
       key: "plan",
       icon: <IdcardOutlined />,
-      label: "Plan",
+      label: "Membership Plan",
       children: [
         {
           key: "/create-gym-plan",
@@ -157,62 +157,7 @@ const SidebarMenu = () => {
         },
       ],
     },
-    {
-      key: "staff",
-      icon: <UserOutlined />,
-      label: "Staff Management",
-      children: [
-        {
-          key: "/staff",
-          icon: <TeamOutlined />,
-          label: "All Staff",
-          path: "/staff",
-        },
-        {
-          key: "/staff/roles",
-          icon: <SafetyCertificateOutlined />,
-          label: "Roles & Permissions",
-          path: "/staff/roles",
-        },
-        {
-          key: "/staff/schedule",
-          icon: <CalendarOutlined />,
-          label: "Staff Schedule",
-          path: "/staff/schedule",
-        },
-      ],
-    },
-    {
-      key: "workouts",
-      icon: <BarChartOutlined />,
-      label: "Workout Plans",
-      children: [
-        {
-          key: "/workouts",
-          icon: <BarChartOutlined />,
-          label: "All Plans",
-          path: "/workouts",
-        },
-        {
-          key: "/workouts/custom",
-          icon: <SolutionOutlined />,
-          label: "Custom Plans",
-          path: "/workouts/custom",
-        },
-        {
-          key: "/workouts/assign",
-          icon: <UsergroupAddOutlined />,
-          label: "Assign Plans",
-          path: "/workouts/assign",
-        },
-      ],
-    },
-    {
-      key: "/schedule",
-      icon: <ScheduleOutlined />,
-      label: "Class Schedule",
-      path: "/schedule",
-    },
+
     {
       key: "/reports",
       icon: <FileTextOutlined />,
@@ -284,21 +229,24 @@ const SidebarMenu = () => {
       trigger={null}
       collapsible
       collapsed={collapsed}
+      width={210} // ✅ Main expanded width
+      collapsedWidth={60} // ✅ When collapsed, keep mini sidebar (icons visible)
       style={{
         overflow: "auto",
         height: "100vh",
         left: 0,
         top: 0,
         bottom: 0,
+        backgroundColor: "#1a1a1a", // ✅ Dark background
+        color: "white", // ✅ Text color white
       }}
-      theme="dark"
     >
       <div
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: collapsed ? "center" : "space-between",
-          padding: collapsed ? "16px 0" : "16px 24px",
+          padding: collapsed ? "16px 0" : "10px 10px",
           height: 64,
           borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
         }}
@@ -312,12 +260,12 @@ const SidebarMenu = () => {
             />
             <div>
               <Title level={5} style={{ color: "white", margin: 0 }}>
-                John Fitness
+                Fit Finder
               </Title>
               <span
                 style={{ color: "rgba(255, 255, 255, 0.65)", fontSize: 12 }}
               >
-                Owner
+                Admin Dashboard
               </span>
             </div>
           </div>
@@ -333,11 +281,18 @@ const SidebarMenu = () => {
       <Menu
         mode="inline"
         theme="dark"
+        style={{
+          borderRight: 0,
+          padding: "8px 0",
+          marginTop: 16,
+          backgroundColor: "#1a1a1a", // ✅ Match sidebar bg
+          color: "white", // ✅ White text
+        }}
         selectedKeys={getSelectedKeys()}
         defaultOpenKeys={getOpenKeys()}
         onClick={handleMenuClick}
         items={menuItems}
-        style={{ borderRight: 0, padding: "8px 0", marginTop: 16 }}
+        inlineIndent={10} // default is 24 → reduced
       />
     </Sider>
   );

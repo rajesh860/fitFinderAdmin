@@ -1,0 +1,37 @@
+.membership-card {
+    background-color: #1a1a1a !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.chart-title {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.chart-wrapper {
+    width: 100%;
+    height: 280px;
+}
+
+.recharts-legend-wrapper {
+    top: 0 !important;
+    right: 0 !important;
+}
+
+.recharts-default-legend {
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 16px !important;
+}
+
+.recharts-tooltip-label {
+    color: #a0a0a0 !important;
+}
+
+.recharts-tooltip-item-name {
+    color: #fff !important;
+}

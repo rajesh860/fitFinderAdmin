@@ -15,6 +15,7 @@ import GymProfile from "../pages/gymProfile";
 import NewEnquiry from "../pages/enquiry/index";
 import CompletedEnquiry from "../pages/enquiry/completedEnquiry";
 import BookingEnquiry from "../pages/enquiry/bookingEnquiry";
+import Dashboard from "../pages/dashboard";
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -34,6 +35,10 @@ export const router = createBrowserRouter([
     // loader: rootLoader,
     children: [
       {
+        path: "/",
+        element: <Dashboard />,
+      },
+      {
         path: "/members/new",
         element: <MemberRegistrationForm />,
       },
@@ -47,7 +52,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/enquiry/booking",
-        element: <BookingEnquiry />,//
+        element: <BookingEnquiry />, //
       },
       {
         path: "/users",

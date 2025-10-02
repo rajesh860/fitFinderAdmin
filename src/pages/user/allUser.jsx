@@ -1,5 +1,8 @@
 import { Table, Button, Tag, Space, Avatar } from "antd";
-import { useChangeFeesStatusMutation, useGetAllUserQuery } from "../../service/user/allUser";
+import {
+  useChangeFeesStatusMutation,
+  useGetAllUserQuery,
+} from "../../service/user/allUser";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ChangeStatusModal from "../../component/modal/changeStatusModal"; // new modal component import
@@ -15,8 +18,6 @@ const AllUser = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [newFeeStatus, setNewFeeStatus] = useState("");
 
-
-
   // Confirm Update
   const handleModalOk = async () => {
     try {
@@ -24,21 +25,20 @@ const AllUser = () => {
         id: selectedUser.id,
         fee_status: newFeeStatus,
       };
-      console.log(newFeeStatus,"newFeeStatus")
-    if(!newFeeStatus){
-      console.log("gbhjnkm")
-      toast.error("Please select the value")
-      return
-    }else{
-
-      const result = await trigger(payload).unwrap();
-      toast.success(result.message || "Fee status updated successfully");
-      setIsModalOpen(false);
-      setSelectedUser(null);
-    }
+      console.log(newFeeStatus, "newFeeStatus");
+      if (!newFeeStatus) {
+        console.log("gbhjnkm");
+        toast.error("Please select the value");
+        return;
+      } else {
+        const result = await trigger(payload).unwrap();
+        toast.success(result.message || "Fee status updated successfully");
+        setIsModalOpen(false);
+        setSelectedUser(null);
+      }
     } catch (error) {
       toast.error(error.data?.message || "Failed to update fee status");
-    } 
+    }
   };
 
   // Cancel Modal
@@ -53,13 +53,16 @@ const AllUser = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      render:(r,record) => {
-        return(<Space size={12} align="center" className="ua-member-cell">
-        <Avatar src={record.photo} size={40} />
-        <div className="ua-member-meta">
-          <div className="ua-member-name">{r}</div>
-        </div>
-      </Space>)},
+      render: (r, record) => {
+        return (
+          <Space size={12} align="center" className="ua-member-cell">
+            <Avatar src={record.photo} size={40} />
+            <div className="ua-member-meta">
+              <div className="ua-member-name">{r}</div>
+            </div>
+          </Space>
+        );
+      },
     },
     {
       title: "Email",
@@ -113,7 +116,10 @@ const AllUser = () => {
       title: "More Detail",
       key: "view",
       render: (_, record) => (
-        <Button type="default" onClick={() => nav(`/user-detail/${record?.id}`)}>
+        <Button
+          type="default"
+          onClick={() => nav(`/user-detail/${record?.id}`)}
+        >
           View
         </Button>
       ),
@@ -121,15 +127,17 @@ const AllUser = () => {
   ];
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2 style={{ marginBottom: "20px" }}>User Management</h2>
-      <Table
-        columns={columns}
-        dataSource={data?.data}
-        rowKey="id"
-        loading={loading}
-        bordered
-      />
+    <div>
+      <h2 style={{ marginBottom: "20px", color: "white" }}>User Management</h2>
+      <div className="dark-table">
+        <Table
+          columns={columns}
+          dataSource={data?.data}
+          rowKey="id"
+          loading={loading}
+          bordered
+        />
+      </div>
 
       {/* Modal Component */}
       <ChangeStatusModal

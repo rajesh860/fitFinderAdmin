@@ -1,0 +1,15 @@
+.stats-cards-container {
+    display: flex;
+    gap: 15px;
+}
+.graph-container {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+    .revenue-col {
+        width: 50%;
+    }
+    .membership-col {
+        width: 50%;
+    }
+}
