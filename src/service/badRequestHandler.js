@@ -4,8 +4,8 @@ import { toast } from "react-toastify";
 export const dynamicBaseQuery = async (args, WebApi, extraOptions) => {
   const rawBaseQuery = fetchBaseQuery({
     // baseUrl: "http://192.168.1.34:3001",
-    baseUrl: "http://localhost:3001",
-    // baseUrl: "http://13.60.166.240/api",
+    // baseUrl: "http://localhost:3001",
+    baseUrl: "http://13.60.166.240/api",
     // baseUrl: "https://exchthanos.com/api/",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,

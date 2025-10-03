@@ -1,20 +1,21 @@
-.progress-history-table{
+.progress-history-table {
   margin-top: 30px;
   padding: 12px 8px;
-  
-  .content{
-    background: white;
+
+  .content {
+    background: black;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
     border-radius: 12px;
     padding: 16px;
 
-    .title{
+    .title {
       font-size: 22px;
       font-weight: 600;
       margin-bottom: 14px;
+      color: white;
     }
 
-    .export-button{
+    .export-button {
       margin-left: auto;
     }
   }

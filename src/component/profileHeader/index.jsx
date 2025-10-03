@@ -1,4 +1,4 @@
-import { Card, Row, Col, Tag, Avatar, Progress, Tooltip } from "antd";
+import { Card, Row, Col, Tag, Avatar } from "antd";
 import {
   CheckCircleTwoTone,
   CrownTwoTone,

@@ -22,7 +22,6 @@ const UserDetail = () => {
 
   // ----- filters
   const [period, setPeriod] = useState("current");
-  const [range, setRange] = useState(null);
   const [monthDate, setMonthDate] = useState(dayjs());
 
   // Update monthDate when period changes
@@ -291,13 +290,7 @@ const UserDetail = () => {
           </Card>
 
           <div className="calendar-con">
-            <DateFilters
-              period={period}
-              onPeriodChange={setPeriod}
-              range={range}
-              onRangeChange={setRange}
-              onToday={() => setPeriod("current")}
-            />
+            <DateFilters onToday={() => setPeriod("current")} />
 
             <Card
               bordered={false}

@@ -5,7 +5,9 @@
     .member-profile-wrapper {
         display: flex;
         flex-direction: column;
-
+        .ant-card {
+            background-color: transparent;
+        }
         .title-card {
             background-color: transparent;
             border: none;
@@ -22,6 +24,7 @@
 
             .ant-card-body {
                 padding: 0%;
+
                 background-color: transparent;
             }
         }
@@ -31,22 +34,22 @@
         }
 
         .calendar-con {
-            background-color: #1f1f1f;
+            // background-color: #1f1f1f;
             margin-top: 16px;
 
             .calendar-card {
                 box-shadow: none;
                 border-radius: 0;
-                background-color: #1f1f1f;
+                // background-color: #1f1f1f;
                 border: 1px solid #333;
 
                 .ant-card-body {
                     border: none;
                     border-radius: 0;
                     padding: 0;
-                    margin: 0 12px;
+                    // margin: 0 12px;
                     display: flex;
-                    gap: 1rem;
+                    // gap: 1rem;
                     padding-bottom: 40px;
                     background-color: #1f1f1f;
 
@@ -54,7 +57,7 @@
                         max-width: calc(100% - 35%);
                         background-color: #141414;
                         border-radius: 8px;
-                        padding: 16px;
+                        // padding: 16px;
                         border: 1px solid #333;
                     }
 

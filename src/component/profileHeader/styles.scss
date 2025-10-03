@@ -21,6 +21,7 @@
         .ph__name {
             font-size: 18px;
             font-weight: 700;
+            color: white;
         }
 
         .ph__tags {
@@ -43,7 +44,8 @@
     }
 
     .ph__item .ph__value {
-        font-weight: 600;
+        font-weight: 500;
+        color: rgb(207, 207, 207);
     }
 
     .ph__contact {

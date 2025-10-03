@@ -1,6 +1,8 @@
 .filters {
     box-shadow: none !important;
-
+    .section-title {
+        color: white;
+    }
     &.ant-card {
         border-radius: 0;
     }

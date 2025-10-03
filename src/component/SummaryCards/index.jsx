@@ -7,13 +7,17 @@ function Summary({ present, absent, rate }) {
       <div className="scard__title">Attendance Summary</div>
       <Row gutter={[2, 2]} className="content">
         <Col span={24}>
-          <Statistic title="Present Days" value={present} className="present"/>
+          <Statistic title="Present Days" value={present} className="present" />
         </Col>
         <Col span={24}>
-          <Statistic title="Absent Days" value={absent} className="absent"/>
+          <Statistic title="Absent Days" value={absent} className="absent" />
         </Col>
         <Col span={24}>
-          <Statistic title="Attendance Rate" value={`${rate}%`} className="rate"/>
+          <Statistic
+            title="Attendance Rate"
+            value={`${rate}%`}
+            className="rate"
+          />
         </Col>
       </Row>
     </Card>
@@ -32,7 +36,7 @@ function Insights({ mostActiveTime, avgSession, streak }) {
           <Statistic title="Avg Session" value={avgSession} />
         </Col>
         <Col span={24}>
-          <Statistic title="Current Streak" value={streak} className="red"/>
+          <Statistic title="Current Streak" value={streak} className="red" />
         </Col>
       </Row>
     </Card>
@@ -59,7 +63,6 @@ function Goal({ completed, target }) {
 }
 
 export default function SummaryCards({ summary, insights, goal }) {
-console.log(insights,"insights")
   return (
     <div className="summary-stack">
       <Summary
