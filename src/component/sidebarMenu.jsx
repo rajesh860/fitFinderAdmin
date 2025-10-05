@@ -112,18 +112,27 @@ const SidebarMenu = () => {
       icon: <IdcardOutlined />,
       label: "Membership Plan",
       children: [
+        userRole == "admin"?
+        {
+          key: "/create-plan name",
+          icon: <PlusCircleOutlined />,
+          label: "Create Plan Name",
+          path: "/create-plan-name",
+        }:"",
+        userRole == "gym"?
         {
           key: "/create-gym-plan",
           icon: <PlusCircleOutlined />,
           label: "Create Gym Plan",
           path: "/create-gym-plan",
-        },
+        }:"",
+         userRole == "gym"?
         {
           key: "/all-plan",
           icon: <PlusCircleOutlined />,
           label: "All Plan",
           path: "/all-plan",
-        },
+        }:"",
       ],
     },
     {

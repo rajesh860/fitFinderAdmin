@@ -108,9 +108,9 @@ const NewEnquiry = () => {
       title: "User Name",
       key: "userName",
       render: (_, record) => (
-        <strong>{`${record.userId?.first_name || ""} ${
-          record.userId?.last_name || ""
-        }`}</strong>
+        <strong>{
+          record.userId?.name || ""
+        }</strong>
       ),
     },
     {

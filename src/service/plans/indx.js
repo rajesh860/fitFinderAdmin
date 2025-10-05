@@ -6,6 +6,13 @@ export const plans = createApi({
   reducerPath: "plans",
   baseQuery: dynamicBaseQuery,
   endpoints: (builder) => ({
+    createPlaneName: builder.mutation({
+      query: (body) => ({
+        url: `/admin/create-plan-name`,
+        method: "POST",
+        body,
+      }),
+    }),
     gymPlans: builder.query({
       query: (body) => ({
         url: `/gym/getPlan-name`,
@@ -32,6 +39,7 @@ export const plans = createApi({
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const {
+  useCreatePlaneNameMutation,
   useGymPlansQuery,
   useGymCreatePlansMutation,
   useGetMyPlanQuery,

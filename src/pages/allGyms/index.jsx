@@ -26,11 +26,11 @@ const AllGymList = () => {
   const handleStatusChange = async (gymId, currentStatus, gymName) => {
     try {
       // Toggle the status: if current status is "approved", set to "suspended", and vice versa
-      const newStatus = currentStatus === "approved" ? "suspended" : "approved";
+      const newStatus = currentStatus === "active" ? "inactive" : "active";
       await suspendGym({ id: gymId, status: newStatus }).unwrap();
       
       message.success(
-        `Gym "${gymName}" ${newStatus === "approved" ? "approved" : "suspended"} successfully!`
+        `Gym "${gymName}" ${newStatus === "active" ? "inactive" : "suspended"} successfully!`
       );
       refetch(); // Refresh the data
     } catch (error) {

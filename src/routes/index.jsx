@@ -16,6 +16,7 @@ import NewEnquiry from "../pages/enquiry/index";
 import CompletedEnquiry from "../pages/enquiry/completedEnquiry";
 import BookingEnquiry from "../pages/enquiry/bookingEnquiry";
 import Dashboard from "../pages/dashboard";
+import CreatePlanName from "../pages/createPlanName";
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -90,6 +91,10 @@ export const router = createBrowserRouter([
       {
         path: "/gym-profile",
         element: <GymProfile />,
+      },
+      {
+        path: "/create-plan-name",
+        element: <CreatePlanName />,
       },
       // {
       //   path: "*",
