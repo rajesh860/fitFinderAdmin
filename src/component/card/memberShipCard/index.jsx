@@ -3,52 +3,54 @@ import { Card, Tag, Button, Modal, Form, Input, Select } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import moment from "moment";
 
-// Plan ke icons ke liye colors
+import "./styles.scss"
+
+// Plan ke icons ke liye colors (dark mode friendly)
 const planStyles = {
-  Basic: { bg: "linear-gradient(135deg, #D3D3D3, #A9A9A9)", icon: "⭐" },
-  Silver: { bg: "linear-gradient(135deg, #C0C0C0, #A9A9A9)", icon: "🥈" },
+  Basic: { bg: "linear-gradient(135deg, #444, #666)", icon: "⭐" },
+  Silver: { bg: "linear-gradient(135deg, #555, #777)", icon: "🥈" },
   Gold: { bg: "linear-gradient(135deg, #FFD43B, #FFA500)", icon: "👑" },
-  Platinum: { bg: "linear-gradient(135deg, #E5E4E2, #B0C4DE)", icon: "💎" },
+  Platinum: { bg: "linear-gradient(135deg, #999, #bbb)", icon: "💎" },
 };
 
-// Features ke tags ke liye color mapping
-const featureColors = {
-  0: { color: "#E6F4EA", text: "#137333" },
-  1: { color: "#E8F0FE", text: "#1A73E8" },
-  2: { color: "#F3E8FD", text: "#9334E6" },
-  3: { color: "#FEF3E2", text: "#C06A00" },
-};
+// Features ke tags ke liye color mapping (dark friendly)
+// const featureColors = {
+//   0: { color: "#1f2a37", text: "#58a6ff" },
+//   1: { color: "#1a1f24", text: "#9ccfd8" },
+//   2: { color: "#262c33", text: "#c9d1d9" },
+//   3: { color: "#1c1f22", text: "#ffa500" },
+// };
 
-const MembershipCard = ({  data,editMode}) => {
-  const {planName:title, price, durationInMonths:duration, features, created_at:createdDate } = data
+const MembershipCard = ({ data, editMode }) => {
+  const {
+    planName: title,
+    price,
+    durationInMonths: duration,
+    features,
+    created_at: createdDate,
+  } = data;
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
 
   const style = planStyles[title] || {
-    bg: "linear-gradient(135deg, #ccc, #999)",
+    bg: "linear-gradient(135deg, #333, #555)",
     icon: "📦",
   };
 
-  // Edit button pe current data form me load karna
   const handleEdit = () => {
-    form.setFieldsValue({
-      title,
-      price,
-      duration,
-      features,
-    });
+    form.setFieldsValue({ title, price, duration, features });
     setIsModalOpen(true);
   };
 
-  // Save changes
   const handleSave = () => {
     form.validateFields().then((values) => {
       console.log("Edited Values:", values);
       setIsModalOpen(false);
-      // 👆 yaha API call ya parent state update kar sakte ho
+      // API call ya parent state update
     });
   };
-  // Duration ko Month → Year/Month format me convert
+
   const formatDuration = (months) => {
     if (!months) return "";
     if (months >= 12) {
@@ -58,14 +60,18 @@ const MembershipCard = ({  data,editMode}) => {
     }
     return `${months} Month`;
   };
+
   return (
     <>
       <Card
         style={{
           width: "100%",
           borderRadius: 12,
-          boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+          // boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
           position: "relative",
+          background: "transparent",
+          color: "#c9d1d9",
+          border:"none"
         }}
         bodyStyle={{ padding: 12 }}
       >
@@ -86,7 +92,7 @@ const MembershipCard = ({  data,editMode}) => {
             {style.icon}
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "#000" }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#c9d1d9" }}>
               {title}
             </div>
             <div style={{ fontSize: 18, fontWeight: 700, color: "#00A86B" }}>
@@ -95,146 +101,173 @@ const MembershipCard = ({  data,editMode}) => {
           </div>
 
           <Tag
-            color="#FFF3BF"
+            color="#333"
             style={{
               position: "absolute",
               right: 0,
               top: 5,
-              color: "#6B4E00",
+              color: "#ffa500",
               fontWeight: 500,
               borderRadius: 20,
               padding: "4px 10px",
             }}
           >
-        {formatDuration(duration)}
+            {formatDuration(duration)}
           </Tag>
         </div>
 
         {/* Features */}
-      {/* Features */}
-<div
-  style={{
-    marginTop: 18,
-    display: "flex",
-    flexWrap: "wrap",
-    gap: 6,
-    maxHeight: 63, // 2 rows approx height (24px each row)
-    overflow: "hidden",
-    position: "relative",
-    marginBottom:18
-  }}
->
-  {features.map((feature, index) => {
-    // ✅ Generate random number 0-3
-    const randomIndex = Math.floor(Math.random() * 4); // 0,1,2,3
-    const fc = featureColors[randomIndex];
+        <div
+          style={{
+            marginTop: 18,
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 6,
+            maxHeight: 63,
+            overflow: "hidden",
+            marginBottom: 18,
+          }}
+        >
+          {features.map((feature, index) => {
+            const randomIndex = Math.floor(Math.random() * 4);
+            // const fc = featureColors[randomIndex];
+            return (
+              <Tag
+                key={feature}
+                style={{
+                  borderRadius: 20,
+                  padding: "4px 12px",
+                  fontWeight: 500,
+                  margin: 0,
+                  // background: fc.color,
+                  // color: fc.text,
+                  border: "none",
+                }}
+              >
+                {feature}
+              </Tag>
+            );
+          })}
+        </div>
 
-    return (
-      <Tag
-        key={feature}
-        style={{
-          borderRadius: 20,
-          padding: "4px 12px",
-          fontWeight: 500,
-          margin: 0,
-          background: fc.color,
-          color: fc.text,
-          border: "none",
-        }}
-      >
-        {feature}
-      </Tag>
-    );
-  })}
-
-  {/* Overlay for ... if overflow */}
-  {/* {features.length > 4 && ( // approx 2 rows me 4-5 features fit
-    <div
-      style={{
-        position: "absolute",
-        bottom: 0,
-        right: 0,
-        padding: "0 6px",
-        background: "white",
-        fontWeight: 500,
-      }}
-    >
-      ...
-    </div>
-  )} */}
-</div>
-
-
-    
-
-        {/* Edit Button */}
-        <div style={{ marginTop: 16, textAlign: "right",width:"100%",display:"flex",alignItems:"center",justifyContent:"space-between" }}>
-            <div>
-              Created: <span style={{ fontWeight: 500 }}>{moment(createdDate).format("DD-MM-YYYY")}</span>
-              </div>  
-          {editMode&&
-          <Button
-            type="primary"
-            icon={<EditOutlined />}
-            onClick={handleEdit}
-            style={{
-              borderRadius: 8,
-              background: "#009F5D",
-              fontWeight: 500,
-              padding: "0 20px",
-            }}
-          >
-            Edit
-          </Button>
-          }
+        {/* Footer */}
+        <div
+          style={{
+            marginTop: 16,
+            textAlign: "right",
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            color: "#8b949e",
+          }}
+        >
+          <div>
+            Created:{" "}
+            <span style={{ fontWeight: 500 }}>
+              {moment(createdDate).format("DD-MM-YYYY")}
+            </span>
+          </div>
+      
+            <Button
+              type="primary"
+              icon={<EditOutlined />}
+              onClick={handleEdit}
+              style={{
+                borderRadius: 8,
+                background: "#009F5D",
+                fontWeight: 500,
+                padding: "0 20px",
+              }}
+            >
+              Edit
+            </Button>
+  
         </div>
       </Card>
 
       {/* Edit Modal */}
-      <Modal
-        title="Edit Membership Plan"
-        open={isModalOpen}
-        onOk={handleSave}
-        onCancel={() => setIsModalOpen(false)}
-        okText="Save"
-        cancelText="Cancel"
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item
-            name="title"
-            label="Plan Title"
-            rules={[{ required: true, message: "Please enter plan title" }]}
-          >
-            <Input />
-          </Form.Item>
+   <Modal
+  title={<span style={{ color: "#c9d1d9" }}>Edit Membership Plan</span>}
+  open={isModalOpen}
+  onOk={handleSave}
+  onCancel={() => setIsModalOpen(false)}
+  okText="Save"
+  cancelText="Cancel"
+  centered
+  className="edit-plan-modal"
+  bodyStyle={{
+    background: "#161b22",
+    color: "#c9d1d9",
+    borderRadius: "8px",
+  }}
+  okButtonProps={{ style: { background: "#009F5D", borderColor: "#009F5D", color: "#fff" } }}
+  cancelButtonProps={{ style: { color: "#c9d1d9", borderColor: "#30363d" } }}
+>
+  <Form form={form} layout="vertical">
+    <Form.Item
+      name="title"
+      label={<span style={{ color: "#c9d1d9" }}>Plan Title</span>}
+      rules={[{ required: true, message: "Please enter plan title" }]}
+    >
+      <Input
+        style={{
+          background: "#0d1117",
+          color: "#c9d1d9",
+          borderColor: "#30363d",
+        }}
+      />
+    </Form.Item>
 
-          <Form.Item
-            name="price"
-            label="Price"
-            rules={[{ required: true, message: "Please enter price" }]}
-          >
-            <Input />
-          </Form.Item>
+    <Form.Item
+      name="price"
+      label={<span style={{ color: "#c9d1d9" }}>Price</span>}
+      rules={[{ required: true, message: "Please enter price" }]}
+    >
+      <Input
+        style={{
+          background: "#0d1117",
+          color: "#c9d1d9",
+          borderColor: "#30363d",
+        }}
+      />
+    </Form.Item>
 
-          <Form.Item
-            name="duration"
-            label="Duration"
-            rules={[{ required: true, message: "Please enter duration" }]}
-          >
-            <Input />
-          </Form.Item>
+    <Form.Item
+      name="duration"
+      label={<span style={{ color: "#c9d1d9" }}>Duration</span>}
+      rules={[{ required: true, message: "Please enter duration" }]}
+    >
+      <Input
+        style={{
+          background: "#0d1117",
+          color: "#c9d1d9",
+          borderColor: "#30363d",
+        }}
+      />
+    </Form.Item>
 
-          <Form.Item name="features" label="Features">
-            <Select
-              mode="multiple"
-              options={Object.keys(featureColors).map((f) => ({
-                label: f,
-                value: f,
-              }))}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
+    <Form.Item
+      name="features"
+      label={<span style={{ color: "#c9d1d9" }}>Features</span>}
+    >
+      <Select
+        mode="multiple"
+        dropdownStyle={{ background: "#0d1117", color: "#c9d1d9" }}
+        style={{
+          background: "#0d1117",
+          color: "#c9d1d9",
+          borderColor: "#30363d",
+        }}
+        // options={Object.keys(featureColors).map((f) => ({
+        //   label: f,
+        //   value: f,
+        // }))}
+      />
+    </Form.Item>
+  </Form>
+</Modal>
+
     </>
   );
 };

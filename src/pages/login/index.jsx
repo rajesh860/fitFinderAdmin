@@ -13,11 +13,12 @@ const LoginPage = () => {
 
 
   const onFinish = (values) => {
-    console.log("Login Data:", values);
+  
     trigger(values)
   };
 useEffect(()=>{
 if(data?.token){
+  console.log(data?.token)
 toast.success(data?.message)
 localStorage.setItem("token",data?.token)
 localStorage.setItem("userRole",data?.user?.userRole)

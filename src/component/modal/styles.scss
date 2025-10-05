@@ -1,0 +1,32 @@
+.dark-modal {
+  .ant-modal-content {
+    background-color: #1e1e1e;  // dark background
+    color: #fff;                 // white text
+  }
+
+  .ant-modal-header {
+    border-bottom: 1px solid #444;
+    .ant-modal-title {
+      color: #fff;
+    }
+  }
+
+  .ant-modal-body {
+    color: #fff;
+  }
+
+  .ant-modal-footer {
+    border-top: 1px solid #444;
+    button {
+      color: #fff;
+      background: #333;
+      border: 1px solid #555;
+    }
+  }
+
+  input, textarea {
+    background-color: #2a2a2a;
+    color: #fff;
+    border: 1px solid #555;
+  }
+}

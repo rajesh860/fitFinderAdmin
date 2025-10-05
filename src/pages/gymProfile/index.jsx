@@ -30,7 +30,7 @@ export default function GymProfile() {
   const {
     name,
     owner_name,
-    contact,
+    phone,
     email,
     address,
     location,
@@ -39,6 +39,7 @@ export default function GymProfile() {
     owner_image,
     gymCertificates,
     aboutGym,
+    gymName
   } = data?.data;
 
   const [lat, lng] = location?.coordinates || [];
@@ -70,7 +71,7 @@ export default function GymProfile() {
         }}
       >
         <Meta
-          title={<span style={{ fontSize: "24px", fontWeight: 700 }}>{name}</span>}
+          title={<span style={{ fontSize: "24px", fontWeight: 700 }}>{gymName}</span>}
           description={
             <span style={{ fontSize: "14px", color: "#555" }}>
               {aboutGym || "No description available"}
@@ -143,7 +144,7 @@ export default function GymProfile() {
           {/* Contact Info */}
           <Card title="Contact Info" style={{ marginBottom: "24px" }}>
             <p>
-              <PhoneOutlined /> {contact}
+              <PhoneOutlined /> {phone}
             </p>
             <p>
               <MailOutlined /> {email}

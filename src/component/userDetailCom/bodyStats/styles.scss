@@ -1,0 +1,44 @@
+// src/components/BodyStats.scss
+
+.body-stats {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 16px;
+  margin-top: 16px;
+width: 100%;
+  .stat-card {
+    width: calc(33% - 15px);
+    color: white;
+    padding: 16px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    // min-height: 90px;
+    height: 100px;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+    }
+
+    .stat-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      opacity: 0.9;
+
+      .icon {
+        font-size: 20px;
+      }
+    }
+
+    .value {
+      margin-top: 8px;
+      font-size: 22px;
+      font-weight: 600;
+    }
+  }
+}

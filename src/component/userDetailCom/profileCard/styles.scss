@@ -1,0 +1,76 @@
+// src/components/ProfileCard.scss
+
+.profile-card {
+  width: calc(100% - 14px);
+  padding: 14px;
+  background-color: #1e2a38;
+  border-radius: 16px;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+  .profile-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 12px;
+    object-fit: cover;
+    border: 3px solid #3a4a5a;
+  }
+
+  h2 {
+    margin: 8px 0;
+    font-weight: 600;
+  }
+
+  .tag {
+    display: inline-block;
+    margin: 4px 4px 16px 4px;
+    font-weight: 500;
+  }
+
+  .details {
+    text-align: left;
+    margin: 16px 0;
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      margin: 8px 0;
+      font-size: 14px;
+      flex-wrap: nowrap;
+span{width: fit-content;
+padding-inline: 0%;}
+      .bold {
+        font-weight: 600;
+      }
+
+      .green {
+        color: #00c853;
+      }
+    }
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #334155;
+    margin: 20px 0;
+  }
+
+  .contact-info {
+    text-align: left;
+
+    h4 {
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    p {
+      margin: 8px 0;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+}

@@ -1,326 +1,120 @@
-import { Row, Col, Card } from "antd";
-import dayjs from "dayjs";
-import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-import { useMemo, useState, useEffect } from "react";
-import ProfileHeader from "../../component/profileHeader";
-import DateFilters from "../../component/dateFilters";
-import AttendanceCalendar from "../../component/attendanceCalendar";
-import SummaryCards from "../../component/SummaryCards";
-import "./styles.scss";
-import { useGetUserDetailQuery } from "../../service/user/allUser";
-import { useParams } from "react-router-dom";
-import ProgressHistoryTable from "../../component/card/progressHistoryTable";
-import { useGetProgressQuery } from "../../service/gyms";
+import ProfileCard from "../../component/userDetailCom/profileCard"
+import BodyStats from "../../component/userDetailCom/bodyStats"
+import AttendanceSummary from "../../component/userDetailCom/attendanceSummary/attendance"
 
-// Dayjs plugins extend karo
-dayjs.extend(isSameOrBefore);
-dayjs.extend(isSameOrAfter);
-
+import GoalProgress from "../../component/userDetailCom/attendanceSummary/goalProgress"
+import AttendanceCalendar from "../../component/userDetailCom/attendanceCalendar"
+import ProgressHistory from "../../component/userDetailCom/progressHistoryTable"
+import "./styles.scss"
+import { useGetUserDetailQuery } from "../../service/user/allUser"
+import { useAddProgressMutation, useGetProgressQuery } from "../../service/gyms";
+import { useParams } from "react-router-dom"
+import { useEffect, useState } from "react"
+import Insights from "../../component/userDetailCom/attendanceSummary/insight"
+import AddMemberProgress from "../../component/modal/addMemberProgress"
+import { Button } from "antd"
+import { toast } from "react-toastify"
 const UserDetail = () => {
-  const { id } = useParams();
+    const { id } = useParams();
 
-  // ----- filters
-  const [period, setPeriod] = useState("current");
-  const [monthDate, setMonthDate] = useState(dayjs());
+    const [userData, setUserData] = useState({})
+    const [isModalOpen,setIsModalOpen] = useState(false)
+    const { data: getProgress ,refetch} = useGetProgressQuery(id);
+    const { data, isLoading, isError } = useGetUserDetailQuery(id);
+    //   console.log(data?.user,"data")
 
-  // Update monthDate when period changes
-  useEffect(() => {
-    if (period === "last") setMonthDate(dayjs().subtract(1, "month"));
-    else setMonthDate(dayjs());
-  }, [period]);
+    useEffect(() => {
+        if (data?.success) {
+            setUserData({
+                name: data?.user?.name,
+                email: data?.user?.email,
+                phone: data?.user?.phone,
+                photo: data?.user?.photo,
+                dob: data?.user?.dob,
+                planName: data?.user?.currentMembership?.planName,
+                address: data?.user?.address,
+                planPrice: data?.user?.currentMembership?.planPrice,
+                membership_status: data?.user?.currentMembership?.membership_status,
+                membership_end: data?.user?.currentMembership?.membership_end,
 
-  // ----- API data
-  const { data, isLoading, isError } = useGetUserDetailQuery(id);
+            })
 
-  // ----- Membership dates
-  const membershipStart = useMemo(() => {
-    return data?.user?.currentMembership?.membership_start
-      ? dayjs(data.user.currentMembership.membership_start).startOf("day")
-      : null;
-  }, [data?.user?.currentMembership?.membership_start]);
 
-  const membershipEnd = useMemo(() => {
-    return data?.user?.currentMembership?.membership_end
-      ? dayjs(data.user.currentMembership.membership_end).startOf("day")
-      : null;
-  }, [data?.user?.currentMembership?.membership_end]);
+        }
+    }, [data])
 
-  console.log("Membership Data:", data?.user?.currentMembership);
+   
 
-  // ----- Combine all attendance data (both from root and currentMembership)
-  const allAttendanceData = useMemo(() => {
-    const mainAttendance = data?.attendance || [];
-    const currentMembershipAttendance =
-      data?.user?.currentMembership?.attendance || [];
+    const membership_end = data?.user?.currentMembership?.membership_end
+    const membership_start = data?.user?.currentMembership?.membership_start
+    membership_end
 
-    // Combine both arrays and remove duplicates based on date
-    const combined = [...mainAttendance, ...currentMembershipAttendance];
-
-    // Remove duplicates - keep the latest record if same date exists
-    const attendanceMap = {};
-
-    combined.forEach((item) => {
-      const dateKey = dayjs(item.date).format("YYYY-MM-DD");
-
-      // If date already exists, keep the one with latest createdAt or updatedAt
-      if (
-        !attendanceMap[dateKey] ||
-        dayjs(item.createdAt || item.updatedAt).isAfter(
-          dayjs(
-            attendanceMap[dateKey].createdAt || attendanceMap[dateKey].updatedAt
-          )
-        )
-      ) {
-        attendanceMap[dateKey] = item;
-      }
-    });
-
-    return Object.values(attendanceMap);
-  }, [data?.attendance, data?.user?.currentMembership?.attendance]);
-
-  // ----- Date ranges for current month view
-  const startOfMonth = useMemo(() => monthDate.startOf("month"), [monthDate]);
-  const endOfMonth = useMemo(() => monthDate.endOf("month"), [monthDate]);
-
-  // ----- Attendance mapping
-  const attendance = useMemo(() => {
-    const attendanceMap = {};
-
-    // Mark present from combined attendance data with time
-    allAttendanceData?.forEach((item) => {
-      const dateKey = dayjs(item.date).format("YYYY-MM-DD");
-      const timeKey = dayjs(item.date).format("hh:mm A");
-
-      // Store object with status and time
-      attendanceMap[dateKey] = {
-        status: item.status, // "present" or "absent"
-        time: timeKey, // HH:mm A format
-        source: item.source || "combined", // Track source for debugging
-      };
-    });
-
-    // Mark absent automatically for unmarked days within membership period
-    let cursor = startOfMonth;
-    while (cursor.isBefore(endOfMonth) || cursor.isSame(endOfMonth, "day")) {
-      const dateKey = cursor.format("YYYY-MM-DD");
-
-      // Only mark as absent if:
-      // 1. No attendance record exists
-      // 2. Date is before today
-      // 3. Date is within membership period (if membership exists)
-      const isBeforeToday = cursor.isBefore(dayjs(), "day");
-      const isWithinMembership =
-        !membershipStart ||
-        ((cursor.isAfter(membershipStart, "day") ||
-          cursor.isSame(membershipStart, "day")) &&
-          (!membershipEnd ||
-            cursor.isBefore(membershipEnd, "day") ||
-            cursor.isSame(membershipEnd, "day")));
-
-      if (!attendanceMap[dateKey] && isBeforeToday && isWithinMembership) {
-        attendanceMap[dateKey] = {
-          status: "absent",
-          time: null,
-          source: "auto",
-        };
-      }
-
-      cursor = cursor.add(1, "day");
-    }
-
-    // Convert to array for calendar
-    return Object.entries(attendanceMap).map(
-      ([date, { status, time, source }]) => ({
-        date,
-        status,
-        time,
-        source,
-      })
-    );
-  }, [
-    allAttendanceData,
-    monthDate,
-    startOfMonth,
-    endOfMonth,
-    membershipStart,
-    membershipEnd,
-  ]);
-
-  // ----- Summary calculation (Pure dayjs use karo)
-  const summary = useMemo(() => {
-    let present = 0;
-    let absent = 0;
-
-    if (!membershipStart) {
-      return {
-        present: 0,
-        absent: 0,
-        attendanceRate: 0,
-        today: 0,
-        totalDays: 0,
-      };
-    }
-
-    const today = dayjs().startOf("day");
-    let cursor = membershipStart.clone();
-
-    // Calculate only for the period from membership start to today
-    while (cursor.isSameOrBefore(today, "day")) {
-      const key = cursor.format("YYYY-MM-DD");
-
-      const record = attendance.find(
-        (a) => dayjs(a.date).format("YYYY-MM-DD") === key
-      );
-
-      if (record?.status === "present") {
-        present += 1;
-      } else if (record?.status === "absent") {
-        // Only count explicit absent records
-        absent += 1;
-      }
-      // Don't count days without records (future days or before membership)
-
-      cursor = cursor.add(1, "day");
-    }
-
-    const total = present + absent;
-    const attendanceRate = total ? Math.round((present / total) * 100) : 0;
-
-    const todayKey = today.format("YYYY-MM-DD");
-    const todayPresent = attendance?.find(
-      (a) => a.date === todayKey && a.status === "present"
-    )
-      ? 1
-      : 0;
-
-    return {
-      present,
-      absent,
-      attendanceRate,
-      today: todayPresent,
-      totalDays: total,
+     const showModal = () => setIsModalOpen(true);
+ const [trigger, { data: apiResponse }] = useAddProgressMutation();
+     const handleAddProgress =(values)=>{
+        console.log("hit")
+         const newProgress = {
+      data: {
+        weight: values.weight,
+        height: values.height,
+        arm: values.arm,
+        waist: values.waist,
+        thigh: values.thigh,
+        chest: values.chest,
+        bloodGroup: values.bloodGroup,
+      },
+      memberId: id,
     };
-  }, [attendance, membershipStart]);
+trigger(newProgress)
+     }
 
-  // ----- Insights calculation
-  const insights = useMemo(() => {
-    if (!attendance || attendance.length === 0) {
-      return { mostActiveTime: "N/A", avgSession: "N/A", streak: "0 days" };
-    }
+     useEffect(()=>{
+if(apiResponse?.success){
+toast.success(apiResponse?.message)
+refetch()
+}
+     },[apiResponse])
+    return (
+        <div className="user-detail-container">
+            <AddMemberProgress handleAddProgress={handleAddProgress} isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen}/>
+            <div className="header-row">
+                <div className="title">
 
-    // Most Active Time → First present record ka time directly from time property
-    const presentRecords = attendance.filter(
-      (a) => a.status === "present" && a.time
-    );
-    const mostActiveTime =
-      presentRecords.length > 0 ? presentRecords[0].time : "N/A";
-
-    // Streak calculation - consecutive present days
-    let streak = 0;
-    let cursor = dayjs().startOf("day");
-
-    while (true) {
-      const key = cursor.format("YYYY-MM-DD");
-      const record = attendance.find(
-        (a) => a.date === key && a.status === "present"
-      );
-
-      if (record) {
-        streak += 1;
-      } else {
-        break; // Streak ends on first absent or missing day
-      }
-
-      cursor = cursor.subtract(1, "day");
-
-      // Break if we go too far back in time (safety check)
-      if (streak > 365) break;
-    }
-
-    return {
-      mostActiveTime,
-      avgSession: "N/A", // You can calculate this if you have session duration data
-      streak: `${streak} days`,
-    };
-  }, [attendance]);
-
-  const goal = {
-    completed: summary.present,
-    target: 20,
-  };
-
-  const userProfile = data
-    ? {
-        ...data.user,
-        attendance,
-        progress: data.progress,
-        membershipStart: membershipStart?.format("YYYY-MM-DD"),
-        membershipEnd: membershipEnd?.format("YYYY-MM-DD"),
-      }
-    : null;
-
-  const { data: getProgress } = useGetProgressQuery(id);
-
-  const mergerProgress =
-    (getProgress?.data && [
-      getProgress?.data?.current,
-      ...(getProgress?.data?.history || []),
-    ]) ||
-    [];
-
-  return (
-    <div className="user-profile-container" style={{ minHeight: "100vh" }}>
-      {isLoading && <p style={{ color: "#ffffff" }}>Loading...</p>}
-      {isError && (
-        <p style={{ color: "#ff4d4f" }}>Error loading user details.</p>
-      )}
-
-      {userProfile && (
-        <div className="member-profile-wrapper">
-          <Card
-            title="Member Profile & Attendance"
-            className="title-card"
-            // style={{ background: "#1f1f1f" }}
-          >
-            <ProfileHeader
-              user={userProfile}
-              progress={getProgress?.data?.current}
-            />
-          </Card>
-
-          <div className="calendar-con">
-            <DateFilters onToday={() => setPeriod("current")} />
-
-            <Card
-              bordered={false}
-              style={{ padding: 0, background: "#1f1f1f" }}
-              className="calendar-card"
-            >
-              <div className="calender-main">
-                <AttendanceCalendar
-                  monthDate={monthDate}
-                  setMonthDate={setMonthDate}
-                  attendance={attendance}
-                  membership_end={membershipEnd}
-                  membershipStart={membershipStart}
-                />
-
-                <ProgressHistoryTable getProgressHistory={mergerProgress} />
-              </div>
-              <div className="summary-cards">
-                <SummaryCards
-                  summary={summary}
-                  insights={insights}
-                  goal={goal}
-                />
-              </div>
-            </Card>
-          </div>
+        <h2>Gym Member Dashboard
+        </h2>
+             <span>Track member progress and attendance</span>
+                </div>
+       
+        <div className="header-actions">
+          <Button type="primary" onClick={showModal}>+ Add Progress</Button>
+          <Button type="default" className="export-btn">Export Excel</Button>
         </div>
-      )}
-    </div>
-  );
-};
+      </div>
+            <div className="top-col">
 
-export default UserDetail;
+                <div className="profile-col">
+
+                    <ProfileCard userData={userData} />
+                </div>
+                <div className="current-progress">
+                    <h3>Current Progress</h3>
+                    <BodyStats progress={getProgress?.data?.current} />
+                    <AttendanceCalendar attendanceData={data?.user?.currentMembership?.attendance}
+                        membership_end={membership_end} 
+                        membership_start={membership_start}
+                    />
+                </div>
+                <div className="attendance-summery">
+                    <AttendanceSummary attendanceData={data?.user?.currentMembership?.attendance || []} />
+  <Insights attendanceData={data?.user?.currentMembership?.attendance || []} />
+  <GoalProgress attendanceData={data?.user?.currentMembership?.attendance || []} monthlyTarget={30} />
+                </div>
+            </div>
+            <div className="footer-table">
+                <ProgressHistory progressData={getProgress?.data}/>
+            </div>
+        </div>
+    )
+}
+
+export default UserDetail

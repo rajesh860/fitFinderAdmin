@@ -6,41 +6,18 @@ import { useGetMyPlanQuery } from "../../service/plans/indx";
 
 const AllPlan = () => {
   const [searchText, setSearchText] = useState("");
+  const { data: plansData } = useGetMyPlanQuery();
 
-  // Plans array
-  const plans = [
-    {
-      title: "Basic",
-      price: "₹1,000",
-      duration: "1 Month",
-      features: ["Personal Trainer"],
-      createdDate: "22 Aug 2025",
-    },
-    {
-      title: "Silver",
-      price: "₹1,800",
-      duration: "3 Months",
-      features: ["Diet Plan", "Supplements"],
-      createdDate: "22 Aug 2025",
-    },
-    {
-      title: "Gold",
-      price: "₹3,000",
-      duration: "6 Months",
-      features: ["Personal Trainer", "Diet Plan", "Supplements", "Pool Access"],
-      createdDate: "22 Aug 2025",
-    },
-    {
-      title: "Platinum",
-      price: "₹5,000",
-      duration: "1 Year",
-      features: ["Personal Trainer", "Diet Plan", "Supplements", "Pool Access"],
-      createdDate: "22 Aug 2025",
-    },
-  ];
-const {data:plansData} = useGetMyPlanQuery()
   return (
-    <div style={{ padding: 20 }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        // backgroundColor: "#0d1117",
+        // padding: 20,
+        color: "#c9d1d9",
+      }}
+    >
+      {/* Header Section */}
       <div
         style={{
           display: "flex",
@@ -50,32 +27,66 @@ const {data:plansData} = useGetMyPlanQuery()
           flexWrap: "wrap",
         }}
       >
-        <h2 style={{ margin: 0 }}>All Plan</h2>
+        <h2 style={{ margin: 0, color: "#fff" }}>All Plans</h2>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <Breadcrumb>
-            <Breadcrumb.Item href="">
-              <HomeOutlined />
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>Plan</Breadcrumb.Item>
-            <Breadcrumb.Item>All Plan</Breadcrumb.Item>
-          </Breadcrumb>
+          <Breadcrumb
+            items={[
+              {
+                href: "",
+                title: <HomeOutlined style={{ color: "#58a6ff" }} />,
+              },
+              { title: <span style={{ color: "#8b949e" }}>Plan</span> },
+              { title: <span style={{ color: "#fff" }}>All Plan</span> },
+            ]}
+          />
 
           <Input
             placeholder="Search by name, email, or contact"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            prefix={<SearchOutlined />}
-            style={{ width: 250 }}
+            prefix={<SearchOutlined style={{ color: "#8b949e" }} />}
+            style={{
+              width: 250,
+              backgroundColor: "#161b22",
+              borderColor: "#30363d",
+              color: "#c9d1d9",
+            }}
           />
         </div>
       </div>
 
-      {/* Plans ko render karo */}
-      <div style={{ display: "grid", gridTemplateColumns:"repeat(4, 1fr)", columnGap: 20 }}>
-        {plansData?.map((plan, index) => (
-          <MembershipCard key={index} data={plan} />
-        ))}
+      {/* Plans Grid */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+          gap: 16,
+          paddingTop: 10,
+        }}
+      >
+        {plansData?.length ? (
+          plansData.map((plan, index) => (
+            <div
+              key={index}
+              style={{
+                backgroundColor: "#161b22",
+                border: "1px solid #30363d",
+                borderRadius: "12px",
+                padding: 4,
+                transition: "0.3s",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
+                // boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+              }}
+            >
+              <MembershipCard data={plan} />
+            </div>
+          ))
+        ) : (
+          <p style={{ color: "#8b949e", textAlign: "center", gridColumn: "1 / -1" }}>
+            No plans found.
+          </p>
+        )}
       </div>
     </div>
   );

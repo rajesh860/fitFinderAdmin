@@ -185,7 +185,7 @@ const SidebarMenu = () => {
     if (e.key === "/logout") {
       // ✅ Logout logic
       localStorage.clear(); // clear all local storage
-      navigate("/login"); // navigate to login page
+   window.location.replace("/login");
       return;
     }
 

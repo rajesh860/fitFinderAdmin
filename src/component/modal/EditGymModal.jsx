@@ -3,11 +3,13 @@ import { Modal, Form, Input, Upload, Button, Typography, Row, Col } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { useUpdarteGymProfileMutation } from "../../service/gyms";
+import imageCompression from "browser-image-compression";
 
 const { Text } = Typography;
 
 export default function EditGymModal({ open, onClose, data }) {
-  const [trigger, { data: gymProfileUpdateResponse, isLoading }] = useUpdarteGymProfileMutation();
+  const [trigger, { data: gymProfileUpdateResponse, isLoading }] =
+    useUpdarteGymProfileMutation();
   const [form] = Form.useForm();
 
   const [ownerFileList, setOwnerFileList] = useState([]);
@@ -25,6 +27,7 @@ export default function EditGymModal({ open, onClose, data }) {
         email: data.email,
         address: data.address,
         aboutGym: data.aboutGym,
+        contact: data.phone,
       });
 
       setLocationState({
@@ -69,29 +72,35 @@ export default function EditGymModal({ open, onClose, data }) {
       toast.error("Geolocation not supported");
       return;
     }
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      let detectedAddress = "";
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        let detectedAddress = "";
 
-      try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+          );
+          const geoData = await res.json();
+          detectedAddress = geoData.display_name || "";
+        } catch (error) {
+          console.error(error);
+        }
+
+        setLocationState({ lat, lng, address: detectedAddress });
+        setChangedFields((prev) => ({
+          ...prev,
+          location: { type: "Point", coordinates: [lng, lat] },
+        }));
+        toast.success(
+          detectedAddress
+            ? `📍 Location updated! ${detectedAddress}`
+            : "📍 Location updated successfully!"
         );
-        const geoData = await res.json();
-        detectedAddress = geoData.display_name || "";
-      } catch (error) {
-        console.error(error);
-      }
-
-      setLocationState({ lat, lng, address: detectedAddress });
-      setChangedFields((prev) => ({ ...prev, location: { type: "Point", coordinates: [lng, lat] } }));
-      toast.success(
-        detectedAddress
-          ? `📍 Location updated! ${detectedAddress}`
-          : "📍 Location updated successfully!"
-      );
-    }, (err) => toast.error("Error fetching location: " + err.message));
+      },
+      (err) => toast.error("Error fetching location: " + err.message)
+    );
   };
 
   // Track form field changes
@@ -99,51 +108,60 @@ export default function EditGymModal({ open, onClose, data }) {
     setChangedFields((prev) => ({ ...prev, ...changedValues }));
   };
 
+  // Compress image and preserve format
+  const compressAndSetFile = async (files, key) => {
+    if (!files || files.length === 0) {
+      setChangedFields((prev) => {
+        const copy = { ...prev };
+        delete copy[key];
+        return copy;
+      });
+      return;
+    }
+
+    const compressedFiles = await Promise.all(
+      files.map(async (file) => {
+        if (file.originFileObj) {
+          const originalFile = file.originFileObj;
+          const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+            initialQuality: 0.8,
+          };
+          const compressedBlob = await imageCompression(originalFile, options);
+
+          // Preserve format & name
+          const preservedFile = new File([compressedBlob], originalFile.name, {
+            type: originalFile.type,
+          });
+
+          return preservedFile;
+        }
+        return file.url || file;
+      })
+    );
+
+    setChangedFields((prev) => ({
+      ...prev,
+      [key]: compressedFiles,
+    }));
+  };
+
   // File change handlers
   const handleOwnerImageChange = ({ fileList }) => {
     setOwnerFileList(fileList);
-    if (fileList.length > 0) {
-      setChangedFields((prev) => ({
-        ...prev,
-        owner_image: [fileList[0].originFileObj || fileList[0].url],
-      }));
-    } else {
-      setChangedFields((prev) => {
-        const copy = { ...prev };
-        delete copy.owner_image;
-        return copy;
-      });
-    }
+    compressAndSetFile(fileList, "owner_image");
   };
 
   const handleCoverImageChange = ({ fileList }) => {
     setCoverFileList(fileList);
-    if (fileList.length > 0) {
-      setChangedFields((prev) => ({
-        ...prev,
-        coverImage: [fileList[0].originFileObj || fileList[0].url],
-      }));
-    } else {
-      setChangedFields((prev) => {
-        const copy = { ...prev };
-        delete copy.coverImage;
-        return copy;
-      });
-    }
+    compressAndSetFile(fileList, "coverImage");
   };
 
   const handleGalleryChange = ({ fileList }) => {
     setGalleryFileList(fileList);
-    if (fileList.length > 0) {
-      const files = fileList.map((f) => f.originFileObj || f.url);
-      setChangedFields((prev) => ({ ...prev, images: files }));
-    } else {
-      setChangedFields((prev) => {
-        const copy = { ...prev };
-        delete copy.images;
-        return copy;
-      });
-    }
+    compressAndSetFile(fileList, "images");
   };
 
   // Submit
@@ -156,21 +174,17 @@ export default function EditGymModal({ open, onClose, data }) {
       }
 
       const formData = new FormData();
-
       for (const key in changedFields) {
-        if (Object.hasOwnProperty.call(changedFields, key)) {
-          const value = changedFields[key];
-
-          if (key === "location" && value?.coordinates?.length === 2) {
-            formData.append("latitude", value.coordinates[1]);
-            formData.append("longitude", value.coordinates[0]);
-          } else if (Array.isArray(value)) {
-            value.forEach((file) => formData.append(key, file));
-          } else if (value instanceof File) {
-            formData.append(key, value);
-          } else {
-            formData.append(key, typeof value === "object" ? JSON.stringify(value) : value);
-          }
+        const value = changedFields[key];
+        if (key === "location" && value?.coordinates?.length === 2) {
+          formData.append("latitude", value.coordinates[1]);
+          formData.append("longitude", value.coordinates[0]);
+        } else if (Array.isArray(value)) {
+          value.forEach((file) => formData.append(key, file));
+        } else if (value instanceof File) {
+          formData.append(key, value);
+        } else {
+          formData.append(key, typeof value === "object" ? JSON.stringify(value) : value);
         }
       }
 
@@ -208,6 +222,7 @@ export default function EditGymModal({ open, onClose, data }) {
             <Form.Item label="Contact" name="contact"><Input /></Form.Item>
             <Form.Item label="Email" name="email"><Input /></Form.Item>
             <Form.Item label="Address" name="address"><Input /></Form.Item>
+            <Form.Item label="Monthly Fess" name="fees_monthly"><Input /></Form.Item>
           </Col>
 
           <Col span={12}>

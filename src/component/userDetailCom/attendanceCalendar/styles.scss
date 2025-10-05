@@ -1,0 +1,134 @@
+$bg-dark: #0d1117;
+$card-bg: #161b22;
+$green: #22c55e;
+$red: #ef4444;
+$blue: #3b82f6;
+$purple: #8b5cf6;
+$yellow: #facc15;
+$white: #ffffff;
+$gray: #9ca3af;
+
+
+.calendar-card {
+  background: $card-bg;
+  border-radius: 12px;
+  padding: 10px;
+  // margin: 20px auto;
+  margin-top: 20px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+  border: none;
+  width: calc(100% - 14px);
+ 
+  .calendar-header{
+    .ant-select {
+      background: #2a2a2a;
+      color: #fff;
+
+      .ant-select-selector {
+        background: #2a2a2a !important;
+        border: 1px solid #444 !important;
+        color: #fff !important;
+      }
+
+      .ant-select-arrow {
+        color: #fff;
+      }
+
+      .ant-select-selection-item {
+        color: #fff !important;
+  }
+}}
+.ant-card-body{
+  padding: 0;
+}
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: $white;
+  }
+
+  .calendar {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .calendar-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+
+      .calendar-cell {
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        color: $white;
+        background: transparent;
+
+        &.header-cell {
+          font-weight: 600;
+          color: $gray;
+          background: transparent;
+        }
+
+        &.present {
+          background: $green;
+        }
+        &.absent {
+          background: $red;
+        }
+        &.today {
+          background: $yellow;
+          color: #000;
+          font-weight: 700;
+        }
+        &.join {
+          border: 2px solid $blue;
+        }
+        &.end {
+          border: 2px solid $purple;
+        }
+        &.empty {
+          background: #2a2f38;
+          color: $gray;
+        }
+      }
+    }
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    gap: 16px;
+justify-content: center;
+    .legend-item {
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+      color: $white;
+
+      .dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+        margin-right: 6px;
+
+        &.present { background: $green; }
+        &.absent { background: $red; }
+        &.today { background: $yellow; }
+        &.join { border: 2px solid $blue; }
+        &.end { border: 2px solid $purple; }
+      }
+    }
+  }
+}
+
+
+ .ant-select-dropdown{
+    background-color: black !important;
+  }

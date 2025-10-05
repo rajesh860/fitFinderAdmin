@@ -1,0 +1,122 @@
+////atendance
+$bg-dark: #0d1117;
+$card-bg: #1e2a38;
+$green: #22c55e;
+$red: #ef4444;
+$blue: #3b82f6;
+$white: #ffffff;
+$gray: #9ca3af;
+
+.attendance-card {
+  background-color: $card-bg;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  padding: 15px;
+  border: none;
+
+.ant-card-body{
+  padding: 0;
+}
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #ffffff;
+  }
+
+  .card-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 6px 0;
+    font-size: 14px;
+    span{
+      color: $gray;
+    }
+  }
+
+  .green { color: #22c55e !important; font-weight: 600; }
+  .red { color: #ef4444 !important; font-weight: 600; }
+  .blue { color: #3b82f6 !important; font-weight: 600; }
+}
+
+
+
+///insight
+
+
+
+.insights-card {
+  background: $card-bg;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  padding: 15px;
+    border: none;
+.ant-card-body{
+  padding: 0;
+}
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: $white;
+  }
+
+  .card-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 6px 0;
+    font-size: 14px;
+    flex-direction: column;
+     span{
+      color: $gray;
+    }
+  }
+
+  .white { color: $white !important; font-weight: 500; }
+  .green { color: $green !important; font-weight: 600; }
+}
+
+
+
+
+///goal progres
+
+
+
+.goal-card {
+  background: $card-bg;
+  border-radius: 12px;
+  margin-bottom: 15px;
+ padding: 15px;
+   border: none;
+.ant-card-body{
+  padding: 0;
+}
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: $white;
+  }
+
+  .goal-progress {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .goal-subtext {
+    margin-top: 8px;
+    font-size: 13px;
+    color: $gray;
+     span{
+      color: $gray;
+    }
+  }
+
+  .white { color: $white !important; font-weight: 500; }
+  .blue { color: $blue !important; font-weight: 600; }
+}

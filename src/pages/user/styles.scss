@@ -229,3 +229,56 @@
         }
     }
 }
+
+
+.user-detail-container
+{
+    .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+.title{
+
+    h2 {
+        margin: 0;
+        font-size: 24px;
+        color: #fff;
+    }
+    span{
+        color: gray;
+    }
+}
+
+    .header-actions {
+      button {
+        margin-left: 10px;
+      }
+      .export-btn {
+        background: transparent;
+        border: 1px solid #fff;
+        color: #fff;
+      }
+    }
+}
+    .top-col{
+        display: flex;
+        .profile-col{
+            width: 25%;
+        }
+        .current-progress{
+            // display: flex;
+            width: 50%;
+            h3{
+                margin: 0%;
+                padding: 0%;
+                color: white;
+                font-size: 22px;
+            }
+
+        }
+        .attendance-summery{
+            width: 25%;
+        }
+    }
+}

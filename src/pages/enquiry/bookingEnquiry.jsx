@@ -220,7 +220,8 @@ const BookingEnquiry = () => {
             label="Select Plan"
             required
             rules={[{ required: true, message: "Please select a plan" }]}
-          >
+          
+            >
             <Select
               placeholder="Choose a plan"
               value={selectedPlan}
@@ -230,7 +231,7 @@ const BookingEnquiry = () => {
               {gymPlan?.map((item) => {
                 return (
                   <Select.Option value={item?._id}>
-                    <Tag color={plngBg[item?.name]}>{item?.name}</Tag>
+                    <Tag color={plngBg[item?.planName]}>{item?.planName}</Tag>
                   </Select.Option>
                 );
               })}
