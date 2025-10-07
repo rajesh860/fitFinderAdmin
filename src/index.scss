@@ -1,0 +1,60 @@
+$bg-dark: #0d1117;
+$card-bg: #1e2a38;
+$green: #22c55e;
+$red: #ef4444;
+$blue: #3b82f6;
+$white: #ffffff;
+$gray: #9ca3af;
+body {
+    padding: 0%;
+    margin: 0%;
+    box-sizing: border-box;
+    background-color: black;
+}
+.ant-select.ant-select-in-form-item {
+    border-radius: 5px !important;
+}
+.ant-select-selector {
+    background-color: rgb(31, 31, 31) !important;
+    border: 2px solid rgb(31, 31, 31) !important;
+    color: white !important;
+
+    .ant-select-selection-placeholder {
+        color: white;
+    }
+}
+
+/* .custom-input{
+    background-color: #1F1F1F !important; 
+    color: white !important;
+    input{
+        background-color: #1F1F1F !important; 
+        border-radius: 0 !important;
+        border: none;
+
+    }
+} */
+
+.custom-table {
+    .ant-table-thead > tr > th {
+        background: $card-bg;
+        color: $gray;
+        font-weight: 600;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    .ant-table-tbody > tr > td {
+        background: $card-bg;
+        color: $white;
+        white-space: nowrap;
+        text-align: center;
+        border-bottom: 1px solid #2a2f38;
+    }
+
+    .ant-btn-primary {
+        background: $blue;
+        border: none;
+        border-radius: 6px;
+    }
+}

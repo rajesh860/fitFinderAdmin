@@ -1,0 +1,49 @@
+$bg-dark: #0d1117;
+$card-bg: #1e2a38;
+$green: #22c55e;
+$red: #ef4444;
+$blue: #3b82f6;
+$white: #ffffff;
+$gray: #9ca3af;
+.fees-collection-container {
+    padding: 16px;
+
+    .summary-cards {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 20px;
+
+        .summary-card {
+            flex: 1;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 16px 0;
+
+            h3 {
+                font-size: 16px;
+                margin-bottom: 8px;
+                color: #888;
+            }
+            .amount {
+                font-size: 22px;
+                font-weight: 600;
+                &.success {
+                    color: #52c41a;
+                }
+                &.warning {
+                    color: #faad14;
+                }
+            }
+        }
+    }
+    .table-wrapper {
+        width: 100%;
+        overflow-x: scroll;
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+        &::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+    }
+}

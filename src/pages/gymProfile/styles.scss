@@ -1,0 +1,147 @@
+.gym-profile {
+  background: #0d0d0d;
+  min-height: 100vh;
+  padding: 0 20px 40px;
+  color: #fff;
+  .banner-wrapper {
+  position: relative;
+}
+.edit-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: white !important;
+  border: none !important;
+  color: black;
+  font-weight: 500;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 200, 150, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &:hover {
+    background: #616161 !important;
+    color: white;
+  }
+
+  svg {
+    font-size: 16px;
+  }
+}
+  .content-section {
+    margin-top: 24px;
+  }
+
+  .card {
+    background: #1a1a1a !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+
+    .ant-card-head {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .ant-card-head-title {
+      color: #fff;
+      font-weight: 700;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ant-card-body {
+      color: #ccc;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+  }
+
+  /* GALLERY */
+  .gallery-img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+    &:hover {
+      transform: scale(1.03);
+    }
+  }
+.about-card{
+    margin-top: 20px;
+}
+  /* OWNER */
+  .owner-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    .owner-avatar {
+      border: 2px solid #00e68a;
+      margin-bottom: 10px;
+    }
+
+    .owner-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #fff;
+    }
+
+    .owner-tag {
+      font-size: 12px;
+      border-radius: 20px;
+      padding: 2px 10px;
+    }
+  }
+
+  /* CONTACT */
+  .contact-card{
+margin-top: 20px;
+      p {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: #ccc;
+          font-size: 14px;
+          margin-bottom: 10px;
+          span{
+            width: 30px;
+            height: 30px;
+            background-color:#213a2f;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(0, 200, 83, 1);
+          }
+        }
+    } 
+
+  /* LOCATION */
+  .location-card {
+    margin-top: 20px;
+    .map-placeholder {
+      background: #242424;
+      border-radius: 10px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .location-text {
+      font-size: 13px;
+      color: #bbb;
+      line-height: 1.5;
+    }
+  }
+}

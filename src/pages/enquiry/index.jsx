@@ -9,6 +9,7 @@ import {
   Popconfirm,
   message,
   Form,
+  Tooltip,
 } from "antd";
 import {
   HomeOutlined,
@@ -25,6 +26,7 @@ import {
 } from "../../service/gyms/index";
 import { toast } from "react-toastify";
 import "./styles.scss";
+import PageHeader from "../../component/pageHeader";
 const NewEnquiry = () => {
   const [searchText, setSearchText] = useState("");
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
@@ -161,54 +163,60 @@ const NewEnquiry = () => {
       ],
       onFilter: (value, record) => record.status === value,
     },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) => (
-        <div style={{ display: "flex", gap: "8px" }}>
-          {/* Approve Button */}
-          <Popconfirm
-            title="Are you sure to approve this enquiry?"
-            onConfirm={() => handleApprove(record)}
-            okText="Yes"
-            cancelText="No"
-            disabled={record.status === "upcoming"} // ✅ upcoming में approve भी disable कर सकते हो अगर जरूरत हो
-          >
-            {record.status !== "upcoming" && (
-              <Button
-                type="primary"
-                icon={<CheckOutlined />}
-                size="small"
-                disabled={record.status === "upcoming"} // ✅ upcoming में approve disable
-              />
-            )}
-          </Popconfirm>
-
-          {/* Reject Button */}
-          {record.status !== "upcoming" && ( // ✅ upcoming में reject button hide
-            <Button
-              danger
-              icon={<CloseOutlined />}
-              size="small"
-              onClick={() => {
-                setSelectedEnquiry(record);
-                setIsRejectModalOpen(true);
-              }}
-            />
-          )}
-
-          {/* Completed Button */}
+   {
+  title: "Action",
+  key: "action",
+  render: (_, record) => (
+    <div style={{ display: "flex", gap: "8px" }}>
+      
+      {/* Approve Button */}
+      <Tooltip title="Approve this enquiry">
+        <Popconfirm
+          title="Are you sure to approve this enquiry?"
+          onConfirm={() => handleApprove(record)}
+          okText="Yes"
+          cancelText="No"
+          disabled={record.status === "upcoming"}
+        >
           <Button
-            icon={<CheckCircleOutlined />}
+            type="primary"
+            icon={<CheckOutlined />}
+            size="small"
+            disabled={record.status === "upcoming"}
+          />
+        </Popconfirm>
+      </Tooltip>
+
+      {/* Reject Button */}
+      {record.status !== "upcoming" && (
+        <Tooltip title="Reject this enquiry">
+          <Button
+            danger
+            icon={<CloseOutlined />}
             size="small"
             onClick={() => {
               setSelectedEnquiry(record);
-              setIsCompleteModalOpen(true);
+              setIsRejectModalOpen(true);
             }}
           />
-        </div>
-      ),
-    },
+        </Tooltip>
+      )}
+
+      {/* Completed Button */}
+      <Tooltip title="Mark as Completed">
+        <Button
+          icon={<CheckCircleOutlined />}
+          size="small"
+          onClick={() => {
+            setSelectedEnquiry(record);
+            setIsCompleteModalOpen(true);
+          }}
+        />
+      </Tooltip>
+
+    </div>
+  ),
+},
   ];
 
   const filteredData = data?.data?.filter(
@@ -230,35 +238,14 @@ const NewEnquiry = () => {
   return (
     <div>
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 16,
-          flexWrap: "wrap",
-        }}
-      >
-        <h2 style={{ margin: 0, color: "white" }}>New Enquiries</h2>
+     <PageHeader
+        title="Trial Enquiries"
+        breadcrumbs={["Enquiry", "Trial Enquiries"]}
+        searchPlaceholder="Search by name, email, contact, date, time"
+        searchText={searchText}
+        onSearchChange={setSearchText}
+      />
 
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <Breadcrumb>
-            <Breadcrumb.Item href="">
-              <HomeOutlined />
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>Enquiry</Breadcrumb.Item>
-            <Breadcrumb.Item>New Enquiries</Breadcrumb.Item>
-          </Breadcrumb>
-
-          <Input
-            placeholder="Search by name, email, contact, date, time"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            prefix={<SearchOutlined />}
-            style={{ width: 300 }}
-          />
-        </div>
-      </div>
 
       {/* Table */}
       <div className="dark-table">

@@ -112,27 +112,30 @@ const SidebarMenu = () => {
       icon: <IdcardOutlined />,
       label: "Membership Plan",
       children: [
-        userRole == "admin"?
-        {
-          key: "/create-plan name",
-          icon: <PlusCircleOutlined />,
-          label: "Create Plan Name",
-          path: "/create-plan-name",
-        }:"",
-        userRole == "gym"?
-        {
-          key: "/create-gym-plan",
-          icon: <PlusCircleOutlined />,
-          label: "Create Gym Plan",
-          path: "/create-gym-plan",
-        }:"",
-         userRole == "gym"?
-        {
-          key: "/all-plan",
-          icon: <PlusCircleOutlined />,
-          label: "All Plan",
-          path: "/all-plan",
-        }:"",
+        userRole == "admin"
+          ? {
+              key: "/create-plan name",
+              icon: <PlusCircleOutlined />,
+              label: "Create Plan Name",
+              path: "/create-plan-name",
+            }
+          : "",
+        userRole == "gym"
+          ? {
+              key: "/create-gym-plan",
+              icon: <PlusCircleOutlined />,
+              label: "Create Gym Plan",
+              path: "/create-gym-plan",
+            }
+          : "",
+        userRole == "gym"
+          ? {
+              key: "/all-plan",
+              icon: <PlusCircleOutlined />,
+              label: "All Plan",
+              path: "/all-plan",
+            }
+          : "",
       ],
     },
     {
@@ -144,7 +147,7 @@ const SidebarMenu = () => {
           key: "/fees",
           icon: <DollarOutlined />,
           label: "Fee Collection",
-          path: "/fees",
+          path: "/fees-collection",
         },
         {
           key: "/subscriptions",
@@ -194,7 +197,7 @@ const SidebarMenu = () => {
     if (e.key === "/logout") {
       // ✅ Logout logic
       localStorage.clear(); // clear all local storage
-   window.location.replace("/login");
+      window.location.replace("/login");
       return;
     }
 

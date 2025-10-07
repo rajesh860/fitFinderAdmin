@@ -1,51 +1,79 @@
 import { useEffect, useState } from "react";
 import {
   Table,
-  Input,
-  Breadcrumb,
   Tag,
   Button,
   Popconfirm,
-  message,
   Modal,
   Select,
   Form,
+  InputNumber,
+  Input,
 } from "antd";
-import { HomeOutlined, SearchOutlined } from "@ant-design/icons";
 import {
   useBookingApproveMutation,
   useGetBookingEnquiryQuery,
 } from "../../service/gyms/index";
 import { useGetMyPlanQuery } from "../../service/plans/indx";
 import { toast } from "react-toastify";
-// import { useUpdateBookingStatusMutation } from "../../service/gyms/index";
+import PageHeader from "../../component/pageHeader";
 
 const BookingEnquiry = () => {
   const [searchText, setSearchText] = useState("");
   const { data, isLoading: loading, refetch } = useGetBookingEnquiryQuery();
   const { data: gymPlan } = useGetMyPlanQuery();
   const [trigger, { data: approve }] = useBookingApproveMutation();
-  // const [updateStatus] = useUpdateBookingStatusMutation(); // ✅ custom RTK query/mutation for status update
 
-  // 🔹 New states for modal & plan selection
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [form] = Form.useForm();
 
-  const handleStatusChange = async (recordId, status, plan) => {
+  const plngBg = {
+    BASIC: "blue",
+    SILVER: "gray",
+    GOLD: "gold",
+    PLATINUM: "green",
+  };
+
+  // 🔹 Handle plan selection → update Total Amount & Duration automatically
+  const handlePlanChange = (planId) => {
+    setSelectedPlan(planId);
+    const plan = gymPlan.find((p) => p._id === planId);
+    if (plan) {
+      form.setFieldsValue({
+        totalAmount: plan.price,
+        durationInMonths: plan.durationInMonths,
+        paidAmount: 0,
+        pendingAmount: plan.price,
+      });
+    }
+  };
+
+  // 🔹 Update Pending Amount live when Paid Amount changes
+  const handlePaidChange = (paid) => {
+    const total = form.getFieldValue("totalAmount") || 0;
+    form.setFieldsValue({
+      pendingAmount: total - (paid || 0),
+    });
+  };
+
+  const handleStatusChange = async (values) => {
+    if (!selectedRecord || !selectedPlan) return;
+
+    const payload = {
+      planId: selectedPlan,
+      totalAmount: values.totalAmount,
+      paidAmount: values.paidAmount,
+      paymentMode: values.paymentMode,
+      remark: values.remark,
+    };
+
     try {
-      // 🔸 Example API call (uncomment when mutation added)
-      // await updateStatus({ id: recordId, status, plan }).unwrap();
-      console.log({ planId: selectedPlan, id: recordId });
-      trigger({ planId: selectedPlan, id: recordId });
-      // message.success(`Booking ${status} successfully${plan ? ` with ${plan} plan` : ""}`);
-      // refetch(); // refresh table after update
-      // setIsModalOpen(false);
-      // setSelectedRecord(null);
-      // setSelectedPlan(null);
+      await trigger({ id: selectedRecord._id, planId: payload });
     } catch (err) {
-      message.error("Failed to update status");
       console.error(err);
+      toast.error("Failed to approve booking");
     }
   };
 
@@ -70,7 +98,6 @@ const BookingEnquiry = () => {
       key: "date",
       dataIndex: "requestedAt",
       render: (date) => new Date(date).toLocaleDateString(),
-      sorter: (a, b) => new Date(a.requestedAt) - new Date(b.requestedAt),
     },
     {
       title: "Enquiry Time",
@@ -102,7 +129,6 @@ const BookingEnquiry = () => {
       render: (_, record) =>
         record.status === "pending" ? (
           <div style={{ display: "flex", gap: "8px" }}>
-            {/* 🔹 Approve Button → Modal open karega */}
             <Button
               type="primary"
               onClick={() => {
@@ -115,7 +141,7 @@ const BookingEnquiry = () => {
 
             <Popconfirm
               title="Are you sure to reject this booking?"
-              onConfirm={() => handleStatusChange(record._id, "rejected")}
+              onConfirm={() => handleStatusChange({ status: "rejected" })}
             >
               <Button type="danger">Reject</Button>
             </Popconfirm>
@@ -134,16 +160,8 @@ const BookingEnquiry = () => {
       (item.user?.email || "")
         .toLowerCase()
         .includes(searchText.toLowerCase()) ||
-      (item.user?.phone || "").includes(searchText) ||
-      new Date(item.requestedAt).toLocaleDateString().includes(searchText) ||
-      new Date(item.requestedAt).toLocaleTimeString().includes(searchText)
+      (item.user?.phone || "").includes(searchText)
   );
-  const plngBg = {
-    BASIC: "blue",
-    SILVER: "gray",
-    GOLD: "gold",
-    PLATINUM: "green",
-  };
 
   useEffect(() => {
     if (approve?.success) {
@@ -152,44 +170,22 @@ const BookingEnquiry = () => {
       setIsModalOpen(false);
       setSelectedRecord(null);
       setSelectedPlan(null);
+      form.resetFields();
     } else if (approve && !approve?.success) {
       toast.error(approve?.message);
     }
   }, [approve]);
+
   return (
-    <div style={{ padding: 20 }}>
-      {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 16,
-          flexWrap: "wrap",
-        }}
-      >
-        <h2 style={{ margin: 0 }}>Booking Enquiries</h2>
+    <div>
+      <PageHeader
+        title="Booking Enquiries"
+        breadcrumbs={["Enquiry", "Booking Enquiries"]}
+        searchPlaceholder="Search by name, email, contact"
+        searchText={searchText}
+        onSearchChange={setSearchText}
+      />
 
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <Breadcrumb>
-            <Breadcrumb.Item href="">
-              <HomeOutlined />
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>Enquiry</Breadcrumb.Item>
-            <Breadcrumb.Item>Booking Enquiries</Breadcrumb.Item>
-          </Breadcrumb>
-
-          <Input
-            placeholder="Search by name, email, contact, date, time"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            prefix={<SearchOutlined />}
-            style={{ width: 300 }}
-          />
-        </div>
-      </div>
-
-      {/* Table */}
       <Table
         columns={columns}
         dataSource={filteredData}
@@ -199,7 +195,6 @@ const BookingEnquiry = () => {
         bordered
       />
 
-      {/* 🔹 Approve Modal */}
       <Modal
         title="Approve Booking"
         open={isModalOpen}
@@ -207,35 +202,75 @@ const BookingEnquiry = () => {
           setIsModalOpen(false);
           setSelectedRecord(null);
           setSelectedPlan(null);
+          form.resetFields();
         }}
         footer={null}
       >
-        <Form
-          layout="vertical"
-          onFinish={() =>
-            handleStatusChange(selectedRecord._id, "approved", selectedPlan)
-          }
-        >
+        <Form form={form} layout="vertical" onFinish={handleStatusChange}>
+          {/* Plan Select */}
           <Form.Item
             label="Select Plan"
-            required
+            name="planId"
             rules={[{ required: true, message: "Please select a plan" }]}
-          
-            >
+          >
             <Select
               placeholder="Choose a plan"
               value={selectedPlan}
-              onChange={(value) => setSelectedPlan(value)}
+              onChange={handlePlanChange}
             >
-              {/* 🔸 Static Plans (Can be Dynamic Later) */}
-              {gymPlan?.map((item) => {
-                return (
-                  <Select.Option value={item?._id}>
-                    <Tag color={plngBg[item?.planName]}>{item?.planName}</Tag>
-                  </Select.Option>
-                );
-              })}
+              {gymPlan?.map((item) => (
+                <Select.Option key={item._id} value={item._id}>
+                  {item.planName} - ₹{item.price} ({item.durationInMonths} mo)
+                </Select.Option>
+              ))}
             </Select>
+          </Form.Item>
+
+          {/* Total Amount - Disabled */}
+          <Form.Item label="Total Amount" name="totalAmount">
+            <InputNumber style={{ width: "100%" }} disabled />
+          </Form.Item>
+
+          {/* Duration - Disabled */}
+          <Form.Item label="Duration (Months)" name="durationInMonths">
+            <Input style={{ width: "100%" }} disabled />
+          </Form.Item>
+
+          {/* Paid Amount */}
+          <Form.Item
+            label="Paid Amount"
+            name="paidAmount"
+            rules={[{ required: true, message: "Enter paid amount" }]}
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              min={0}
+              onChange={handlePaidChange}
+            />
+          </Form.Item>
+
+          {/* Pending Amount - Disabled */}
+          <Form.Item label="Pending Amount" name="pendingAmount">
+            <InputNumber style={{ width: "100%" }} disabled />
+          </Form.Item>
+
+          {/* Payment Mode */}
+          <Form.Item
+            label="Payment Mode"
+            name="paymentMode"
+            rules={[{ required: true, message: "Select payment mode" }]}
+          >
+            <Select placeholder="Select Mode">
+              <Select.Option value="cash">Cash</Select.Option>
+              <Select.Option value="upi">UPI</Select.Option>
+              <Select.Option value="card">Card</Select.Option>
+              <Select.Option value="bank">Bank Transfer</Select.Option>
+            </Select>
+          </Form.Item>
+
+          {/* Remark */}
+          <Form.Item label="Remark" name="remark">
+            <Input.TextArea rows={2} placeholder="Any remark" />
           </Form.Item>
 
           <Form.Item>
@@ -245,7 +280,7 @@ const BookingEnquiry = () => {
               block
               disabled={!selectedPlan}
             >
-              Submit
+              Approve Booking
             </Button>
           </Form.Item>
         </Form>

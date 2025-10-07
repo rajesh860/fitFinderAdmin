@@ -28,9 +28,17 @@ export const allUser = createApi({
       }),
       invalidatesTags:["User"]
     }),
+    deleteMember: builder.mutation({
+      query: (memberId) =>({
+        url: `/gym/delete-member/${memberId}`,
+        method: "POST",
+     
+      }),
+      invalidatesTags:["User"]
+    }),
   }),
 })
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetAllUserQuery ,useGetUserDetailQuery,useChangeFeesStatusMutation} = allUser
+export const {useDeleteMemberMutation, useGetAllUserQuery ,useGetUserDetailQuery,useChangeFeesStatusMutation} = allUser

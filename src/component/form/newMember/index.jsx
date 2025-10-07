@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Form,
-  Input,
-  Button,
-  Typography,
-  message,
-  Select,
-  Tag,
-} from "antd";
+import { Form, Input, Button, Typography, Select, Tag, Row, Col } from "antd";
 import {
   UserOutlined,
   MailOutlined,
@@ -31,30 +23,35 @@ const MemberRegistrationForm = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
-  // 🧠 Plans API call
   const { data: gymPlan, isLoading } = useGetMyPlanQuery();
   const [trigger, { data: response }] = useMemberRegisterMutation();
 
   const onFinish = async (values) => {
-   
+    setLoading(true);
+    try {
       const payload = {
         name: values.name,
         email: values.email,
         phone: values.phone,
         password: values.password,
         userRole: "member",
-        planId: values.planId, // ✅ selected planId bhejna
+        planId: values.planId,
+        totalAmount: Number(values.totalAmount),
+        paidAmount: Number(values.paidAmount),
+        paymentMode: values.paymentMode,
+        remark: values.remark,
       };
-     trigger(payload)
-
-      // form.resetFields();
-    
+      await trigger(payload);
+      form.resetFields();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    if (response?.success) {
-      toast?.success(response?.message);
-    }
+    if (response?.success) toast.success(response?.message);
   }, [response]);
 
   return (
@@ -62,165 +59,236 @@ const MemberRegistrationForm = () => {
       style={{
         minHeight: "100vh",
         display: "flex",
-        flexDirection: "column",
-        justifyContent: "start",
-        alignItems: "center",
-        padding: "10px 20px",
+        justifyContent: "center",
+        alignItems: "start",
+        padding: "20px",
         color: "#c9d1d9",
       }}
     >
-      <Title
-        level={2}
-        style={{
-          color: "#fff",
-          marginBottom: "24px",
-          textAlign: "center",
-        }}
-      >
-        <UserOutlined style={{ marginRight: 8, color: "#1890ff" }} />
-        Member Registration
-      </Title>
-
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        requiredMark={false}
+      <div
         style={{
           width: "100%",
-          maxWidth: 500,
+          maxWidth: 900,
           backgroundColor: "#161b22",
-          padding: "10px 40px",
+          padding: "20px 30px",
           borderRadius: "12px",
           border: "1px solid #30363d",
           boxShadow: "0 0 15px rgba(0,0,0,0.4)",
         }}
       >
-        {/* Name */}
-        <Form.Item
-          name="name"
-          label={<Text style={{ color: "#c9d1d9" }}>Full Name</Text>}
-          rules={[{ required: true, message: "Please enter your name" }]}
+        <Title
+          level={2}
+          style={{ color: "#fff", textAlign: "center", marginBottom: 24 }}
         >
-          <Input
-            prefix={<UserOutlined style={{ color: "#8b949e" }} />}
-            placeholder="Enter your name"
-            size="large"
-            style={{
-              backgroundColor: "#0d1117",
-              borderColor: "#30363d",
-              color: "#c9d1d9",
-            }}
-          />
-        </Form.Item>
+          Member Registration
+        </Title>
 
-        {/* Email */}
-        <Form.Item
-          name="email"
-          label={<Text style={{ color: "#c9d1d9" }}>Email Address</Text>}
-          rules={[
-            { required: true, message: "Please enter your email" },
-            { type: "email", message: "Enter a valid email" },
-          ]}
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          requiredMark={false}
         >
-          <Input
-            prefix={<MailOutlined style={{ color: "#8b949e" }} />}
-            placeholder="Enter your email"
-            size="large"
-            style={{
-              backgroundColor: "#0d1117",
-              borderColor: "#30363d",
-              color: "#c9d1d9",
-            }}
-          />
-        </Form.Item>
+          <Row gutter={16}>
+            {/* Left Column */}
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="name"
+                label={<Text style={{ color: "#c9d1d9" }}>Full Name</Text>}
+                rules={[{ required: true, message: "Please enter your name" }]}
+              >
+                <Input
+                  prefix={<UserOutlined />}
+                  placeholder="Name"
+                  size="large"
+                  style={{
+                    backgroundColor: "#0d1117",
+                    borderColor: "#30363d",
+                    color: "#c9d1d9",
+                  }}
+                />
+              </Form.Item>
 
-        {/* Phone */}
-        <Form.Item
-          name="phone"
-          label={<Text style={{ color: "#c9d1d9" }}>Phone Number</Text>}
-          rules={[
-            { required: true, message: "Please enter your phone number" },
-            {
-              pattern: /^[0-9+\s()-]{10,}$/,
-              message: "Enter a valid phone number",
-            },
-          ]}
-        >
-          <Input
-            prefix={<PhoneOutlined style={{ color: "#8b949e" }} />}
-            placeholder="Enter your phone number"
-            size="large"
-            style={{
-              backgroundColor: "#0d1117",
-              borderColor: "#30363d",
-              color: "#c9d1d9",
-            }}
-          />
-        </Form.Item>
+              <Form.Item
+                name="email"
+                label={<Text style={{ color: "#c9d1d9" }}>Email</Text>}
+                rules={[
+                  { required: true, message: "Enter email" },
+                  { type: "email", message: "Enter valid email" },
+                ]}
+              >
+                <Input
+                  prefix={<MailOutlined />}
+                  placeholder="Email"
+                  size="large"
+                  style={{
+                    backgroundColor: "#0d1117",
+                    borderColor: "#30363d",
+                    color: "#c9d1d9",
+                  }}
+                />
+              </Form.Item>
 
-        {/* Password */}
-        <Form.Item
-          name="password"
-          label={<Text style={{ color: "#c9d1d9" }}>Password</Text>}
-          rules={[{ required: true, message: "Please enter your password" }]}
-        >
-          <Input.Password
-            prefix={<LockOutlined style={{ color: "#8b949e" }} />}
-            placeholder="Enter your password"
-            size="large"
-            style={{
-              backgroundColor: "#0d1117",
-              borderColor: "#30363d",
-              color: "#c9d1d9",
-            }}
-          />
-        </Form.Item>
+              <Form.Item
+                name="password"
+                label={<Text style={{ color: "#c9d1d9" }}>Password</Text>}
+                rules={[{ required: true, message: "Enter password" }]}
+              >
+                <Input.Password
+                  prefix={<LockOutlined />}
+                  placeholder="Password"
+                  size="large"
+                  style={{
+                    backgroundColor: "#0d1117",
+                    borderColor: "#30363d",
+                    color: "#c9d1d9",
+                  }}
+                />
+              </Form.Item>
 
-        {/* Plan Select */}
-        <Form.Item
-          name="planId"
-          label={<Text style={{ color: "#c9d1d9" }}>Select Plan</Text>}
-          rules={[{ required: true, message: "Please select a plan" }]}
-        >
-          <Select
-            placeholder="Select Plan"
-            size="large"
-            loading={isLoading}
-            style={{
-              backgroundColor: "#0d1117",
-              borderColor: "#30363d",
-              color: "#c9d1d9",
-            }}
-          >
-            {gymPlan?.map((item) => (
-              <Select.Option key={item._id} value={item._id}>
-                <Tag color={plngBg[item.planName]}>
-                  {item.planName} - ₹{item.price} ({item.durationInMonths} month)
-                </Tag>
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+              <Form.Item
+                name="planId"
+                label={<Text style={{ color: "#c9d1d9" }}>Select Plan</Text>}
+                rules={[{ required: true, message: "Select a plan" }]}
+              >
+                <Select
+                  placeholder="Select Plan"
+                  size="large"
+                  loading={isLoading}
+                  style={{
+                    backgroundColor: "#0d1117",
+                    borderColor: "#30363d",
+                    color: "#c9d1d9",
+                  }}
+                >
+                  {gymPlan?.map((item) => (
+                    <Select.Option key={item._id} value={item._id}>
+                      <Tag color={plngBg[item.planName]}>
+                        {item.planName} - ₹{item.price} ({item.durationInMonths}{" "}
+                        month)
+                      </Tag>
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
 
-        {/* Submit Button */}
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={isLoading}
-            size="large"
-            block
-            style={{
-              marginTop: "10px",
-              borderRadius: "8px",
-              fontWeight: "500",
-            }}
-          >
-            Register
-          </Button>
-        </Form.Item>
-      </Form>
+            {/* Right Column */}
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="phone"
+                label={<Text style={{ color: "#c9d1d9" }}>Phone Number</Text>}
+                rules={[
+                  { required: true, message: "Enter phone" },
+                  {
+                    pattern: /^[0-9+\s()-]{10,}$/,
+                    message: "Enter valid number",
+                  },
+                ]}
+              >
+                <Input
+                  prefix={<PhoneOutlined />}
+                  placeholder="Phone"
+                  size="large"
+                  style={{
+                    backgroundColor: "#0d1117",
+                    borderColor: "#30363d",
+                    color: "#c9d1d9",
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="totalAmount"
+                label={
+                  <Text style={{ color: "#c9d1d9" }}>Total Amount (₹)</Text>
+                }
+                rules={[{ required: true, message: "Enter total amount" }]}
+              >
+                <Input
+                  type="number"
+                  placeholder="Total Amount"
+                  size="large"
+                  style={{
+                    backgroundColor: "#0d1117",
+                    borderColor: "#30363d",
+                    color: "#c9d1d9",
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="paidAmount"
+                label={
+                  <Text style={{ color: "#c9d1d9" }}>Paid Amount (₹)</Text>
+                }
+                rules={[{ required: true, message: "Enter paid amount" }]}
+              >
+                <Input
+                  type="number"
+                  placeholder="Paid Amount"
+                  size="large"
+                  style={{
+                    backgroundColor: "#0d1117",
+                    borderColor: "#30363d",
+                    color: "#c9d1d9",
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="paymentMode"
+                label={<Text style={{ color: "#c9d1d9" }}>Payment Mode</Text>}
+                rules={[{ required: true, message: "Select payment mode" }]}
+              >
+                <Select
+                  placeholder="Select Mode"
+                  size="large"
+                  style={{
+                    backgroundColor: "#0d1117",
+                    borderColor: "#30363d",
+                    color: "#c9d1d9",
+                  }}
+                >
+                  <Select.Option value="cash">Cash</Select.Option>
+                  <Select.Option value="upi">UPI</Select.Option>
+                  <Select.Option value="card">Card</Select.Option>
+                  <Select.Option value="bank">Bank Transfer</Select.Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                name="remark"
+                label={<Text style={{ color: "#c9d1d9" }}>Remark</Text>}
+              >
+                <Input.TextArea
+                  rows={3}
+                  placeholder="Any remarks"
+                  style={{
+                    backgroundColor: "#0d1117",
+                    borderColor: "#30363d",
+                    color: "#c9d1d9",
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          {/* Submit */}
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={loading || isLoading}
+              size="large"
+              block
+              style={{ marginTop: 10, borderRadius: 8, fontWeight: 500 }}
+            >
+              Register Member
+            </Button>
+          </Form.Item>
+        </Form>
+      </div>
     </div>
   );
 };

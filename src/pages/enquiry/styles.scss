@@ -36,3 +36,16 @@
 }
 
 
+.white-input input {
+  color: white !important;
+}
+
+.white-input input::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.ant-breadcrumb a,
+.ant-breadcrumb-separator,
+.ant-breadcrumb span {
+  color: white !important;
+}

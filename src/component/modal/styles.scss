@@ -1,32 +1,49 @@
 .dark-modal {
   .ant-modal-content {
-    background-color: #1e1e1e;  // dark background
-    color: #fff;                 // white text
+    background-color: #1f1f1f; // dark background
+    color: #fff; // text color
   }
 
   .ant-modal-header {
-    border-bottom: 1px solid #444;
-    .ant-modal-title {
-      color: #fff;
-    }
+    border-bottom: 1px solid #333;
+    color: #fff;
   }
 
-  .ant-modal-body {
+  .ant-modal-title {
     color: #fff;
   }
 
   .ant-modal-footer {
-    border-top: 1px solid #444;
-    button {
-      color: #fff;
-      background: #333;
-      border: 1px solid #555;
+    border-top: 1px solid #333;
+  }
+
+  .custom-input {
+    background-color: #333; // input background
+    color: #fff; // text color
+    border: 1px solid #555;
+
+    &:hover,
+    &:focus {
+      border-color: #00c853; // green accent on focus
+      box-shadow: 0 0 0 2px rgba(0, 200, 83, 0.2);
     }
   }
 
-  input, textarea {
-    background-color: #2a2a2a;
+  .ant-btn-primary {
+    background-color: #00c853;
+    border-color: #00c853;
     color: #fff;
-    border: 1px solid #555;
+
+    &:hover,
+    &:focus {
+      background-color: #00b344;
+      border-color: #00b344;
+      color: #fff;
+    }
+  }
+
+  .ant-input-number .ant-input-number-input {
+    background-color: #333;
+    color: #fff;
   }
 }

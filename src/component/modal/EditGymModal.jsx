@@ -37,9 +37,9 @@ export default function EditGymModal({ open, onClose, data }) {
       });
 
       // Owner Image
-      if (data.owner_image?.[0]) {
+      if (data.owner_image) {
         setOwnerFileList([
-          { uid: "-2", name: "owner.png", status: "done", url: data.owner_image[0] },
+          { uid: "-2", name: "owner.png", status: "done", url: data.owner_image },
         ]);
       } else setOwnerFileList([]);
 

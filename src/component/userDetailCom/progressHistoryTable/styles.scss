@@ -11,33 +11,13 @@ $gray: #9ca3af;
   padding: 5px;
   margin: 20px auto;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
-.antd-card-body{
-  padding: 0;
-}
+  .antd-card-body {
+    padding: 0;
+  }
   .card-title {
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 16px;
     color: $white;
-  }
-
-  .progress-table {
-    .ant-table-thead > tr > th {
-      background: $card-bg;
-      color: $gray;
-      font-weight: 600;
-    }
-
-    .ant-table-tbody > tr > td {
-      background: $card-bg;
-      color: $white;
-      border-bottom: 1px solid #2a2f38;
-    }
-
-    .ant-btn-primary {
-      background: $blue;
-      border: none;
-      border-radius: 6px;
-    }
   }
 }

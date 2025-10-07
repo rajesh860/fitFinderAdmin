@@ -3,6 +3,7 @@ import MembershipCard from "../../component/card/memberShipCard";
 import { HomeOutlined, SearchOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { useGetMyPlanQuery } from "../../service/plans/indx";
+import PageHeader from "../../component/pageHeader";
 
 const AllPlan = () => {
   const [searchText, setSearchText] = useState("");
@@ -17,44 +18,13 @@ const AllPlan = () => {
         color: "#c9d1d9",
       }}
     >
-      {/* Header Section */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 16,
-          flexWrap: "wrap",
-        }}
-      >
-        <h2 style={{ margin: 0, color: "#fff" }}>All Plans</h2>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <Breadcrumb
-            items={[
-              {
-                href: "",
-                title: <HomeOutlined style={{ color: "#58a6ff" }} />,
-              },
-              { title: <span style={{ color: "#8b949e" }}>Plan</span> },
-              { title: <span style={{ color: "#fff" }}>All Plan</span> },
-            ]}
-          />
-
-          <Input
-            placeholder="Search by name, email, or contact"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            prefix={<SearchOutlined style={{ color: "#8b949e" }} />}
-            style={{
-              width: 250,
-              backgroundColor: "#161b22",
-              borderColor: "#30363d",
-              color: "#c9d1d9",
-            }}
-          />
-        </div>
-      </div>
+   <PageHeader
+        title="All Plan"
+        breadcrumbs={["Plan", "All Plan"]}
+        searchPlaceholder="Search by name, email, contact, date, time"
+        searchText={searchText}
+        onSearchChange={setSearchText}
+      />
 
       {/* Plans Grid */}
       <div

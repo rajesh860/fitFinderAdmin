@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Table, Input, Breadcrumb, Tag } from "antd";
 import { HomeOutlined, SearchOutlined } from "@ant-design/icons";
 import { useGetQueryQuery } from "../../service/gyms/index";
+import PageHeader from "../../component/pageHeader";
 
 const CompletedEnquiry = () => {
   const [searchText, setSearchText] = useState("");
@@ -76,35 +77,14 @@ const CompletedEnquiry = () => {
   return (
     <div>
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 16,
-          flexWrap: "wrap",
-        }}
-      >
-        <h2 style={{ margin: 0, color: "white" }}>Completed Enquiries</h2>
+      <PageHeader
+        title="Completed Enquiries"
+        breadcrumbs={["Enquiry", "Completed Enquiries"]}
+        searchPlaceholder="Search by name, email, contact, date, time"
+        searchText={searchText}
+        onSearchChange={setSearchText}
+      />
 
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <Breadcrumb>
-            <Breadcrumb.Item href="">
-              <HomeOutlined />
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>Enquiry</Breadcrumb.Item>
-            <Breadcrumb.Item>Completed Enquiries</Breadcrumb.Item>
-          </Breadcrumb>
-
-          <Input
-            placeholder="Search by name, email, contact, date, time"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            prefix={<SearchOutlined />}
-            style={{ width: 300 }}
-          />
-        </div>
-      </div>
 
       {/* Table */}
       <div className="dark-table">

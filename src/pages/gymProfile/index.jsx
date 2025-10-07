@@ -1,26 +1,23 @@
 import React, { useState } from "react";
-import {
-  Card,
-  Avatar,
-  List,
-  Button,
-  Row,
-  Col,
-  Tag,
-  Typography,
-} from "antd";
+import { Row, Col, Card, List, Avatar, Tag, Typography, Button } from "antd";
 import {
   PhoneOutlined,
   MailOutlined,
   EnvironmentOutlined,
+  UserOutlined,
+  PictureOutlined,
+  InfoCircleOutlined,
+  AimOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
+import "./styles.scss";
+import GymBanner from "../../component/gymProfileComponent/GymBanner";
 import { useGymProfileQuery } from "../../service/gyms";
 import EditGymModal from "../../component/modal/EditGymModal";
 
-const { Meta } = Card;
 const { Text } = Typography;
 
-export default function GymProfile() {
+const GymProfile = () => {
   const { data, isLoading } = useGymProfileQuery();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -39,126 +36,135 @@ export default function GymProfile() {
     owner_image,
     gymCertificates,
     aboutGym,
-    gymName
+    gymName,
   } = data?.data;
 
   const [lat, lng] = location?.coordinates || [];
 
+  // ✅ Fix owner image (in case it's array or null)
+  const ownerImgSrc =
+    Array.isArray(owner_image) && owner_image.length > 0
+      ? owner_image[0]
+      : owner_image || "https://i.pravatar.cc/150?img=3";
+
   return (
-    <div style={{ minHeight: "100vh", background: "#f5f5f5", padding: "20px" }}>
-      {/* Edit Button */}
-      <Button
-        type="primary"
-        style={{ marginBottom: 16 }}
-        onClick={() => setIsModalVisible(true)}
-      >
-        Edit Profile
-      </Button>
+    <div className="gym-profile">
+      {/* 🔹 Top Banner */}
+      <div className="banner-wrapper">
+        <GymBanner coverImage={coverImage} gymName={gymName} />
+        {/* ✏️ Edit Button on top-right corner */}
+        <Button
+          type="primary"
+          icon={<EditOutlined />}
+          className="edit-btn"
+          onClick={() => setIsModalVisible(true)}
+        >
+          Edit Profile
+        </Button>
+      </div>
 
-      {/* Cover Card */}
-      <Card
-        cover={
-          <img
-            alt="cover"
-            src={coverImage}
-            style={{ objectFit: "cover", height: "320px" }}
-          />
-        }
-        style={{
-          borderRadius: "12px",
-          overflow: "hidden",
-          marginBottom: "24px",
-        }}
-      >
-        <Meta
-          title={<span style={{ fontSize: "24px", fontWeight: 700 }}>{gymName}</span>}
-          description={
-            <span style={{ fontSize: "14px", color: "#555" }}>
-              {aboutGym || "No description available"}
-            </span>
-          }
-        />
-      </Card>
-
-      <Row gutter={[24, 24]}>
-        {/* Left column */}
+      {/* 🔹 Main Content */}
+      <Row gutter={[24, 24]} className="content-section">
+        {/* LEFT SIDE */}
         <Col xs={24} lg={16}>
-          {/* Gallery */}
-          <Card title="Gallery" style={{ marginBottom: "24px" }}>
+          {/* 🖼️ GALLERY */}
+          <Card
+            title={
+              <>
+                <PictureOutlined /> Gallery
+              </>
+            }
+            className="card gallery-card"
+          >
             <List
               grid={{ gutter: 16, column: 4 }}
-              dataSource={images?.length ? images : []}
+              dataSource={images}
               renderItem={(item) => (
                 <List.Item>
-                  <img
-                    src={item}
-                    alt="gallery"
-                    style={{
-                      width: "100%",
-                      height: "150px",
-                      objectFit: "cover",
-                      borderRadius: "8px",
-                    }}
-                  />
+                  <img src={item} alt="gallery" className="gallery-img" />
                 </List.Item>
               )}
             />
           </Card>
 
-          {/* About */}
-          <Card title="About the Gym">
+          {/* 🧩 ABOUT GYM */}
+          <Card
+            title={
+              <>
+                <InfoCircleOutlined /> About the Gym
+              </>
+            }
+            className="card about-card"
+          >
             <p>{aboutGym}</p>
           </Card>
         </Col>
 
-        {/* Right column */}
+        {/* RIGHT SIDE */}
         <Col xs={24} lg={8}>
-          {/* Owner */}
-          <Card style={{ marginBottom: "24px" }}>
-            <Meta
-              avatar={
-                <Avatar
-                  size={64}
-                  src={owner_image[0] || "https://i.pravatar.cc/150?img=3"}
-                />
-              }
-              title={name || "No Name"}
-              description={
-                gymCertificates?.length > 0 ? (
-                  <Row gutter={[8, 8]}>
-                    {gymCertificates.map((cert, index) => (
-                      <Col key={index}>
-                        <Tag color="magenta" key={index}>
-                          {cert}
-                        </Tag>
-                      </Col>
-                    ))}
-                  </Row>
-                ) : (
-                  "No Certificate"
-                )
-              }
-            />
-          </Card>
-
-          {/* Contact Info */}
-          <Card title="Contact Info" style={{ marginBottom: "24px" }}>
-            <p>
-              <PhoneOutlined /> {phone}
-            </p>
-            <p>
-              <MailOutlined /> {email}
-            </p>
-            <p>
-              <EnvironmentOutlined /> {address}
-            </p>
-          </Card>
-
-          {/* Location */}
+          {/* 👤 OWNER */}
           <Card
-            title="Location"
-            bordered={false}
-            style={{ borderRadius: 16, marginBottom: 24 }}
+            title={
+              <>
+                <UserOutlined /> Owner
+              </>
+            }
+            className="card owner-card"
+          >
+            <div className="owner-details">
+              <Avatar size={80} src={ownerImgSrc} className="owner-avatar" />
+              <h3 className="owner-name">{owner_name || name}</h3>
+              {gymCertificates?.length > 0 ? (
+                gymCertificates.map((cert, i) => (
+                  <Tag key={i} color="magenta" className="owner-tag">
+                    {cert}
+                  </Tag>
+                ))
+              ) : (
+                <Tag color="red" className="owner-tag">
+                  No Certificate
+                </Tag>
+              )}
+            </div>
+          </Card>
+
+          {/* ☎️ CONTACT INFO */}
+          <Card
+            title={
+              <>
+                <PhoneOutlined /> Contact Info
+              </>
+            }
+            className="card contact-card"
+          >
+            <p>
+              <span>
+                <PhoneOutlined />
+              </span>
+              {phone}
+            </p>
+            <p>
+              <span>
+                <MailOutlined />
+              </span>
+              {email}
+            </p>
+            <p>
+              <span>
+                <EnvironmentOutlined />
+              </span>
+              {address}
+            </p>
+          </Card>
+
+          {/* 📍 LOCATION */}
+          <Card
+            title={
+              <>
+                <AimOutlined /> Location
+              </>
+            }
+            className="card location-card"
           >
             {lat && lng ? (
               <iframe
@@ -171,29 +177,18 @@ export default function GymProfile() {
                 src={`https://www.google.com/maps?q=${lng},${lat}&hl=es;z=14&output=embed`}
               ></iframe>
             ) : (
-              <div
-                style={{
-                  borderRadius: "8px",
-                  height: "140px",
-                  background: "#f3f4f6",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#9ca3af",
-                  fontSize: "13px",
-                }}
-              >
-                Map not available
-              </div>
+              <div className="map-placeholder">Map not available</div>
             )}
-            <Text type="secondary" style={{ fontSize: 12 }}>
+            <Text className="location-text">
+              {gymName}
+              <br />
               {address}
             </Text>
           </Card>
         </Col>
       </Row>
 
-      {/* ✅ Separate Modal Component */}
+      {/* ✅ Edit Gym Modal */}
       <EditGymModal
         open={isModalVisible}
         onClose={() => setIsModalVisible(false)}
@@ -201,4 +196,6 @@ export default function GymProfile() {
       />
     </div>
   );
-}
+};
+
+export default GymProfile;

@@ -1,16 +1,20 @@
-import { Table, Button, Tag, Space, Avatar } from "antd";
+import { Table, Button, Tag, Space, Avatar, Popconfirm } from "antd";
 import {
   useChangeFeesStatusMutation,
   useGetAllUserQuery,
+  useDeleteMemberMutation,
 } from "../../service/user/allUser";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import ChangeStatusModal from "../../component/modal/changeStatusModal"; // new modal component import
+import ChangeStatusModal from "../../component/modal/changeStatusModal";
 import { toast } from "react-toastify";
+import PageHeader from "../../component/pageHeader";
 
 const AllUser = () => {
+  const [searchText, setSearchText] = useState("");
   const { data, isLoading: loading } = useGetAllUserQuery();
   const [trigger] = useChangeFeesStatusMutation();
+  const [deleteUser] = useDeleteMemberMutation();
   const nav = useNavigate();
 
   // Modal States
@@ -25,17 +29,14 @@ const AllUser = () => {
         id: selectedUser.id,
         fee_status: newFeeStatus,
       };
-      console.log(newFeeStatus, "newFeeStatus");
       if (!newFeeStatus) {
-        console.log("gbhjnkm");
-        toast.error("Please select the value");
+        toast.error("Please select a value");
         return;
-      } else {
-        const result = await trigger(payload).unwrap();
-        toast.success(result.message || "Fee status updated successfully");
-        setIsModalOpen(false);
-        setSelectedUser(null);
       }
+      const result = await trigger(payload).unwrap();
+      toast.success(result.message || "Fee status updated successfully");
+      setIsModalOpen(false);
+      setSelectedUser(null);
     } catch (error) {
       toast.error(error.data?.message || "Failed to update fee status");
     }
@@ -47,22 +48,30 @@ const AllUser = () => {
     setSelectedUser(null);
   };
 
+  // Delete User
+  const handleDelete = async (id) => {
+    try {
+      const res = await deleteUser(id).unwrap();
+      toast.success(res.message || "User deleted successfully");
+    } catch (error) {
+      toast.error(error.data?.message || "Failed to delete user");
+    }
+  };
+
   // Table Columns
   const columns = [
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      render: (r, record) => {
-        return (
-          <Space size={12} align="center" className="ua-member-cell">
-            <Avatar src={record.photo} size={40} />
-            <div className="ua-member-meta">
-              <div className="ua-member-name">{r}</div>
-            </div>
-          </Space>
-        );
-      },
+      render: (r, record) => (
+        <Space size={12} align="center" className="ua-member-cell">
+          <Avatar src={record.photo} size={40} />
+          <div className="ua-member-meta">
+            <div className="ua-member-name">{r}</div>
+          </div>
+        </Space>
+      ),
     },
     {
       title: "Email",
@@ -103,32 +112,39 @@ const AllUser = () => {
         </Tag>
       ),
     },
-    // {
-    //   title: "Action",
-    //   key: "action",
-    //   render: (_, record) => (
-    //     <Button type="primary" onClick={() => openModal(record)}>
-    //       Change Status
-    //     </Button>
-    //   ),
-    // },
     {
-      title: "More Detail",
-      key: "view",
+      title: "Actions",
+      key: "actions",
       render: (_, record) => (
-        <Button
-          type="default"
-          onClick={() => nav(`/user-detail/${record?.id}`)}
-        >
-          View
-        </Button>
+        <Space>
+          <Button type="default" onClick={() => nav(`/user-detail/${record?.id}`)}>
+            View
+          </Button>
+
+          <Popconfirm
+            title="Are you sure to delete this user?"
+            okText="Yes, Delete"
+            cancelText="Cancel"
+            onConfirm={() => handleDelete(record?.id)}
+          >
+            <Button type="primary" danger>
+              Delete
+            </Button>
+          </Popconfirm>
+        </Space>
       ),
     },
   ];
 
   return (
     <div>
-      <h2 style={{ marginBottom: "20px", color: "white" }}>User Management</h2>
+      <PageHeader
+        title="All Member"
+        breadcrumbs={["Member", "All Member"]}
+        searchPlaceholder="Search by name, email, contact, date, time"
+        searchText={searchText}
+        onSearchChange={setSearchText}
+      />
       <div className="dark-table">
         <Table
           columns={columns}

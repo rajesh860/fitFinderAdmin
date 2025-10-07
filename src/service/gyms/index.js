@@ -5,7 +5,7 @@ import { dynamicBaseQuery } from "../badRequestHandler.js";
 export const gymList = createApi({
   reducerPath: "gymList",
   baseQuery: dynamicBaseQuery,
-  tagTypes: ["gym"], // 👈 tags declare karne padte hain
+  tagTypes: ["gym", "collection"], // 👈 tags declare karne padte hain
   endpoints: (builder) => ({
     gymList: builder.query({
       query: (body) => ({
@@ -119,7 +119,7 @@ export const gymList = createApi({
       query: ({ planId, id }) => ({
         url: `/gym/booking-approve/${id}`,
         method: "POST",
-        body: { planId },
+        body: planId,
       }),
     }),
     generateQrCode: builder.mutation({
@@ -128,12 +128,37 @@ export const gymList = createApi({
         method: "POST",
       }),
     }),
+    editProgress: builder.mutation({
+      query: ({ memberId, body }) => ({
+        url: `/gym/edit-progress/${memberId}`,
+        method: "POST",
+        body: body,
+      }),
+    }),
+    getFeesCollection: builder.query({
+      query: () => ({
+        url: `/gym/get-fees-collection`,
+        method: "GET",
+      }),
+      providesTags: ["collection"], // 👈 is query ka tag
+    }),
+    addPendingPayment: builder.mutation({
+      query: (body) => ({
+        url: `/gym/add-pending-payment`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["collection"],
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const {
+  useAddPendingPaymentMutation,
+  useGetFeesCollectionQuery,
+  useEditProgressMutation,
   useGenerateQrCodeMutation,
   useBookingApproveMutation,
   useGetBookingEnquiryQuery,
