@@ -64,14 +64,17 @@ const AllUser = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      render: (r, record) => (
+      render: (r, record) => {
+        console.log(record.photo,"bjk")
+        return(
+
         <Space size={12} align="center" className="ua-member-cell">
           <Avatar src={record.photo} size={40} />
           <div className="ua-member-meta">
             <div className="ua-member-name">{r}</div>
           </div>
         </Space>
-      ),
+      )},
     },
     {
       title: "Email",

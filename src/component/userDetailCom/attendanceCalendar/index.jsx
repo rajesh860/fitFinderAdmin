@@ -1,20 +1,32 @@
-// src/components/AttendanceCalendar.jsx
 import React, { useState, useMemo } from "react";
-import { Card, Select } from "antd";
+import { Card, Select, Button } from "antd";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import moment from "moment";
 import "./styles.scss";
 
 const { Option } = Select;
 
-const AttendanceCalendar = ({ attendanceData = [], membership_start, membership_end }) => {
-  const [month, setMonth] = useState(moment().month());
-  const [year, setYear] = useState(moment().year());
-
+const AttendanceCalendar = ({
+  attendanceData = [],
+  membership_start,
+  membership_end,
+  planHistory,
+  selectedMembershipId,
+  setSelectedMembershipId,
+  planLoading,
+}) => {
+  // ✅ Convert start & end dates to moment
   const joinDateObj = membership_start ? moment(membership_start) : null;
   const endDateObj = membership_end ? moment(membership_end) : null;
+
+  // ✅ Current month set as start month
+  const [currentMonth, setCurrentMonth] = useState(
+    joinDateObj ? joinDateObj.clone().startOf("month") : moment().startOf("month")
+  );
+
   const today = moment();
 
-  // Attendance lookup keyed by YYYY-MM-DD
+  // ✅ Attendance lookup (YYYY-MM-DD -> status)
   const attendanceLookup = useMemo(() => {
     const lookup = {};
     attendanceData.forEach((att) => {
@@ -24,11 +36,28 @@ const AttendanceCalendar = ({ attendanceData = [], membership_start, membership_
     return lookup;
   }, [attendanceData]);
 
-  // Generate weeks
-  const daysInMonth = moment([year, month]).daysInMonth();
-  const startDay = moment([year, month, 1]).day();
+  // ✅ Navigation control
+  const handlePrevMonth = () => {
+    const prevMonth = currentMonth.clone().subtract(1, "month");
+    if (joinDateObj && prevMonth.isBefore(joinDateObj, "month")) return; // don't go before start
+    setCurrentMonth(prevMonth);
+  };
+
+  const handleNextMonth = () => {
+    const nextMonth = currentMonth.clone().add(1, "month");
+    if (endDateObj && nextMonth.isAfter(endDateObj, "month")) return; // don't go after end
+    setCurrentMonth(nextMonth);
+  };
+
+  const isPrevDisabled = joinDateObj && currentMonth.isSame(joinDateObj, "month");
+  const isNextDisabled = endDateObj && currentMonth.isSame(endDateObj, "month");
+
+  // ✅ Calendar Grid Generate
+  const daysInMonth = currentMonth.daysInMonth();
+  const startDay = currentMonth.startOf("month").day();
   const weeks = [];
   let currentDay = 1;
+
   for (let w = 0; w < 6; w++) {
     const days = [];
     for (let d = 0; d < 7; d++) {
@@ -41,11 +70,10 @@ const AttendanceCalendar = ({ attendanceData = [], membership_start, membership_
     weeks.push(days);
   }
 
-  // Get class for each day
+  // ✅ Day class generator
   const getDayClass = (day) => {
     if (!day) return "empty";
-
-    const dayObj = moment([year, month, day]);
+    const dayObj = currentMonth.clone().date(day);
     const dayStr = dayObj.format("YYYY-MM-DD");
 
     if (joinDateObj && joinDateObj.isSame(dayObj, "day")) return "join";
@@ -53,40 +81,46 @@ const AttendanceCalendar = ({ attendanceData = [], membership_start, membership_
     if (today.isSame(dayObj, "day")) return "today";
     if (attendanceLookup[dayStr] === "present") return "present";
     if (attendanceLookup[dayStr] === "absent") return "absent";
-
     return "empty";
   };
-
   return (
     <Card className="calendar-card">
-      {/* Header */}
+      {/* Header with Plan Dropdown + Arrows */}
       <div className="calendar-header">
-        <Select
-          value={month}
-          onChange={(val) => setMonth(Number(val))}
-          style={{ width: 120, marginRight: 10 }}
-        >
-          {Array.from({ length: 12 }, (_, i) => (
-            <Option key={i} value={i}>
-              {moment().month(i).format("MMMM")}
-            </Option>
-          ))}
-        </Select>
+        <div className="calendar-title">
+          <h4>{currentMonth.format("MMMM YYYY")}</h4>
 
-        <Select
-          value={year}
-          onChange={(val) => setYear(Number(val))}
-          style={{ width: 100 }}
-        >
-          {Array.from({ length: 5 }, (_, i) => {
-            const y = moment().year() - 2 + i;
-            return (
-              <Option key={y} value={y}>
-                {y}
+          <Select
+            style={{ width: 260, marginTop: 8 }}
+            loading={planLoading}
+            value={selectedMembershipId || "No Plan Found"}
+            onChange={(value) => setSelectedMembershipId(value)}
+            
+          >
+            {planHistory?.data?.map((plan) => (
+              <Option key={plan._id} value={plan._id}>
+                {`${plan.plan?.name || "No Plan"} (${moment(
+                  plan.membership_start
+                ).format("DD MMM")} - ${moment(plan.membership_end).format("DD MMM")})`}
               </Option>
-            );
-          })}
-        </Select>
+            ))}
+          </Select>
+        </div>
+        <div className="calender-arrows">
+
+        <Button
+          icon={<LeftOutlined />}
+          onClick={handlePrevMonth}
+          disabled={isPrevDisabled}
+          className="nav-btn"
+          />
+        <Button
+          icon={<RightOutlined />}
+          onClick={handleNextMonth}
+          disabled={isNextDisabled}
+          className="nav-btn"
+          />
+          </div>
       </div>
 
       {/* Calendar */}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Row, Col, Card, List, Avatar, Tag, Typography, Button } from "antd";
+import { Row, Col, Card, List, Avatar, Tag, Typography, Button, Upload, Image, Popconfirm } from "antd";
 import {
   PhoneOutlined,
   MailOutlined,
@@ -9,17 +9,23 @@ import {
   InfoCircleOutlined,
   AimOutlined,
   EditOutlined,
+  UploadOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import "./styles.scss";
 import GymBanner from "../../component/gymProfileComponent/GymBanner";
-import { useGymProfileQuery } from "../../service/gyms";
+import { useDeleteGalleryImageMutation, useGymProfileQuery, useUpdarteGymProfileMutation } from "../../service/gyms";
 import EditGymModal from "../../component/modal/EditGymModal";
+import { toast } from "react-toastify";
 
 const { Text } = Typography;
 
 const GymProfile = () => {
-  const { data, isLoading } = useGymProfileQuery();
+  const { data, isLoading, refetch } = useGymProfileQuery();
+  const [uploadGalleryImage] = useUpdarteGymProfileMutation();
+  const [trigg] = useDeleteGalleryImageMutation();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   if (isLoading) return <p>Loading...</p>;
   if (!data?.data) return <p>No gym data available</p>;
@@ -37,22 +43,68 @@ const GymProfile = () => {
     gymCertificates,
     aboutGym,
     gymName,
+    _id:gymId
   } = data?.data;
 
   const [lat, lng] = location?.coordinates || [];
 
-  // ✅ Fix owner image (in case it's array or null)
+  // ✅ Handle Gallery Upload
+  const handleGalleryUpload = async ({ file }) => {
+    try {
+      console.log(data,"jhk")
+      setUploading(true);
+      const formData = new FormData();
+      formData.append("images", file);
+
+      const res = await uploadGalleryImage({ id: gymId, data: formData }).unwrap();
+
+      if (res?.success) {
+        toast.success("Gallery image uploaded successfully!");
+        refetch(); // Refresh gym data
+      } else {
+        toast.error(res?.message || "Upload failed");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to upload image");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const ownerImgSrc =
     Array.isArray(owner_image) && owner_image.length > 0
       ? owner_image[0]
       : owner_image || "https://i.pravatar.cc/150?img=3";
+
+
+ const handleDeleteImage = async (file, type="gallery") => {
+    const getS3KeyFromUrl = (url) => {
+    if (!url) return null;
+    const [path] = url.split("?");
+    const baseUrl = "https://fitcrewimages.s3.ap-south-1.amazonaws.com/uploads/";
+    return path.replace(baseUrl, "");
+  };
+    try {
+      console.log(file,"file")
+      const imageKey = getS3KeyFromUrl(file);
+      if (!imageKey) throw new Error("Image key not found");
+      await trigg({ gymId: gymId, imageKey, type }).unwrap();
+
+      toast.success("Image deleted successfully!");
+
+   
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete image");
+    }
+  };
 
   return (
     <div className="gym-profile">
       {/* 🔹 Top Banner */}
       <div className="banner-wrapper">
         <GymBanner coverImage={coverImage} gymName={gymName} />
-        {/* ✏️ Edit Button on top-right corner */}
         <Button
           type="primary"
           icon={<EditOutlined />}
@@ -70,9 +122,32 @@ const GymProfile = () => {
           {/* 🖼️ GALLERY */}
           <Card
             title={
-              <>
-                <PictureOutlined /> Gallery
-              </>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width:"100%"
+                }}
+              >
+                <span>
+                  <PictureOutlined /> Gallery
+                </span>
+                <Upload
+                  customRequest={handleGalleryUpload}
+                  showUploadList={false}
+                  beforeUpload={() => true}
+                >
+                  <Button
+                    icon={<UploadOutlined />}
+                    type="primary"
+                    size="small"
+                    loading={uploading}
+                  >
+                    Upload Gallery
+                  </Button>
+                </Upload>
+              </div>
             }
             className="card gallery-card"
           >
@@ -81,7 +156,20 @@ const GymProfile = () => {
               dataSource={images}
               renderItem={(item) => (
                 <List.Item>
-                  <img src={item} alt="gallery" className="gallery-img" />
+                  <div className="img-div">
+
+                  <Image src={item} alt="gallery" className="gallery-img" />
+                  <div className="dlt-icon">
+                    <Popconfirm
+                      title="Delete this image?"
+                      onConfirm={() => handleDeleteImage(item)}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                      <DeleteOutlined className="delete-icon" />
+                    </Popconfirm>
+                  </div>
+                  </div>
                 </List.Item>
               )}
             />
@@ -138,22 +226,13 @@ const GymProfile = () => {
             className="card contact-card"
           >
             <p>
-              <span>
-                <PhoneOutlined />
-              </span>
-              {phone}
+              <PhoneOutlined /> {phone}
             </p>
             <p>
-              <span>
-                <MailOutlined />
-              </span>
-              {email}
+              <MailOutlined /> {email}
             </p>
             <p>
-              <span>
-                <EnvironmentOutlined />
-              </span>
-              {address}
+              <EnvironmentOutlined /> {address}
             </p>
           </Card>
 

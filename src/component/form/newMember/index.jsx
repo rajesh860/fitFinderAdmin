@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Typography, Select, Tag, Row, Col } from "antd";
+import { Form, Input, Button, Typography, Select, Tag, Row, Col, Checkbox, DatePicker } from "antd";
 import {
   UserOutlined,
   MailOutlined,
@@ -9,6 +9,7 @@ import {
 import { useMemberRegisterMutation } from "../../../service/register";
 import { toast } from "react-toastify";
 import { useGetMyPlanQuery } from "../../../service/plans/indx";
+import moment from "moment";
 
 const { Title, Text } = Typography;
 
@@ -22,6 +23,7 @@ const plngBg = {
 const MemberRegistrationForm = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [isManual, setIsManual] = useState(false);
 
   const { data: gymPlan, isLoading } = useGetMyPlanQuery();
   const [trigger, { data: response }] = useMemberRegisterMutation();
@@ -40,9 +42,11 @@ const MemberRegistrationForm = () => {
         paidAmount: Number(values.paidAmount),
         paymentMode: values.paymentMode,
         remark: values.remark,
+        isManual: isManual,
+        manualStartDate: values.manualStartDate ? values.manualStartDate.toISOString() : null,
+        manualEndDate: values.manualEndDate ? values.manualEndDate.toISOString() : null,
       };
       await trigger(payload);
-      form.resetFields();
     } catch (err) {
       console.error(err);
     } finally {
@@ -51,7 +55,11 @@ const MemberRegistrationForm = () => {
   };
 
   useEffect(() => {
-    if (response?.success) toast.success(response?.message);
+    if (response?.success){
+       toast.success(response?.message);
+       form.resetFields();
+       setIsManual(false);
+    }
   }, [response]);
 
   return (
@@ -160,17 +168,62 @@ const MemberRegistrationForm = () => {
                     borderColor: "#30363d",
                     color: "#c9d1d9",
                   }}
+                  onChange={(value) => {
+                    const selectedPlan = gymPlan.find((p) => p._id === value);
+                    if (selectedPlan) {
+                      form.setFieldsValue({ totalAmount: selectedPlan.price });
+                    }
+                  }}
                 >
                   {gymPlan?.map((item) => (
                     <Select.Option key={item._id} value={item._id}>
                       <Tag color={plngBg[item.planName]}>
-                        {item.planName} - ₹{item.price} ({item.durationInMonths}{" "}
-                        month)
+                        {item.planName} - ₹{item.price} ({item.durationInMonths} month)
                       </Tag>
                     </Select.Option>
                   ))}
                 </Select>
               </Form.Item>
+
+              {/* Manual Membership Toggle */}
+              <Form.Item>
+                <Checkbox
+                  checked={isManual}
+                  onChange={(e) => setIsManual(e.target.checked)}
+                  style={{ color: "#c9d1d9" }}
+                >
+                  Manual Membership Dates
+                </Checkbox>
+              </Form.Item>
+
+              {isManual && (
+                <Row gutter={16}>
+                  <Col xs={12}>
+                    <Form.Item
+                      name="manualStartDate"
+                      label={<Text style={{ color: "#c9d1d9" }}>Start Date</Text>}
+                      rules={[{ required: true, message: "Select start date" }]}
+                    >
+                      <DatePicker
+                        style={{ width: "100%" }}
+                        size="large"
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={12}>
+                    <Form.Item
+                      name="manualEndDate"
+                      label={<Text style={{ color: "#c9d1d9" }}>End Date</Text>}
+                      rules={[{ required: true, message: "Select end date" }]}
+                    >
+                      <DatePicker
+                        style={{ width: "100%" }}
+                        size="large"
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              )}
             </Col>
 
             {/* Right Column */}

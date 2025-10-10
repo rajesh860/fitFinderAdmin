@@ -36,9 +36,21 @@ export const allUser = createApi({
       }),
       invalidatesTags:["User"]
     }),
+    getMemberAttendance: builder.query({
+      query: ({membershipId,memberId}) =>({
+        url: `/user/get-member-attendance/${membershipId}/${memberId}`,
+  
+      }),
+    }),
+   getUserPlanHistory: builder.query({
+  query: ({ gymId, memberId }) => ({
+    url: `/user/get-plan-history?gymId=${gymId}&memberId=${memberId}`,
+    method: "POST",
+  }),
+}),
   }),
 })
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {useDeleteMemberMutation, useGetAllUserQuery ,useGetUserDetailQuery,useChangeFeesStatusMutation} = allUser
+export const {useGetUserPlanHistoryQuery,useGetMemberAttendanceQuery,useDeleteMemberMutation, useGetAllUserQuery ,useGetUserDetailQuery,useChangeFeesStatusMutation} = allUser

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Form, Input, Upload, Button, Typography, Row, Col } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
-import { useUpdarteGymProfileMutation } from "../../service/gyms";
+import { useUpdarteGymProfileMutation, useDeleteGalleryImageMutation } from "../../service/gyms";
 import imageCompression from "browser-image-compression";
 
 const { Text } = Typography;
@@ -10,11 +10,11 @@ const { Text } = Typography;
 export default function EditGymModal({ open, onClose, data }) {
   const [trigger, { data: gymProfileUpdateResponse, isLoading }] =
     useUpdarteGymProfileMutation();
+  const [trigg] = useDeleteGalleryImageMutation();
   const [form] = Form.useForm();
 
   const [ownerFileList, setOwnerFileList] = useState([]);
   const [coverFileList, setCoverFileList] = useState([]);
-  const [galleryFileList, setGalleryFileList] = useState([]);
   const [locationState, setLocationState] = useState({ lat: "", lng: "", address: "" });
   const [changedFields, setChangedFields] = useState({});
 
@@ -50,23 +50,11 @@ export default function EditGymModal({ open, onClose, data }) {
         ]);
       } else setCoverFileList([]);
 
-      // Gallery Images
-      if (data.images?.length) {
-        setGalleryFileList(
-          data.images.map((url, index) => ({
-            uid: String(index),
-            name: `image-${index + 1}.png`,
-            status: "done",
-            url,
-          }))
-        );
-      } else setGalleryFileList([]);
-
       setChangedFields({});
     }
   }, [data, form]);
 
-  // Location detection
+  // Detect location
   const detectLocation = () => {
     if (!navigator.geolocation) {
       toast.error("Geolocation not supported");
@@ -103,12 +91,11 @@ export default function EditGymModal({ open, onClose, data }) {
     );
   };
 
-  // Track form field changes
   const handleFieldChange = (changedValues) => {
     setChangedFields((prev) => ({ ...prev, ...changedValues }));
   };
 
-  // Compress image and preserve format
+  // Compress and store image
   const compressAndSetFile = async (files, key) => {
     if (!files || files.length === 0) {
       setChangedFields((prev) => {
@@ -130,12 +117,9 @@ export default function EditGymModal({ open, onClose, data }) {
             initialQuality: 0.8,
           };
           const compressedBlob = await imageCompression(originalFile, options);
-
-          // Preserve format & name
           const preservedFile = new File([compressedBlob], originalFile.name, {
             type: originalFile.type,
           });
-
           return preservedFile;
         }
         return file.url || file;
@@ -148,7 +132,6 @@ export default function EditGymModal({ open, onClose, data }) {
     }));
   };
 
-  // File change handlers
   const handleOwnerImageChange = ({ fileList }) => {
     setOwnerFileList(fileList);
     compressAndSetFile(fileList, "owner_image");
@@ -159,12 +142,6 @@ export default function EditGymModal({ open, onClose, data }) {
     compressAndSetFile(fileList, "coverImage");
   };
 
-  const handleGalleryChange = ({ fileList }) => {
-    setGalleryFileList(fileList);
-    compressAndSetFile(fileList, "images");
-  };
-
-  // Submit
   const handleOk = async () => {
     try {
       if (Object.keys(changedFields).length === 0) {
@@ -204,6 +181,42 @@ export default function EditGymModal({ open, onClose, data }) {
       toast.error(gymProfileUpdateResponse.message);
     }
   }, [gymProfileUpdateResponse]);
+
+  const getS3KeyFromUrl = (url) => {
+    if (!url) return null;
+    const [path] = url.split("?");
+    const baseUrl = "https://fitcrewimages.s3.ap-south-1.amazonaws.com/uploads/";
+    return path.replace(baseUrl, "");
+  };
+
+  const handleDeleteImage = async (file, type) => {
+    try {
+      const imageKey = getS3KeyFromUrl(file.url);
+      if (!imageKey) throw new Error("Image key not found");
+      await trigg({ gymId: data._id, imageKey, type }).unwrap();
+
+      toast.success("Image deleted successfully!");
+
+      if (type === "owner") {
+        setOwnerFileList([]);
+        setChangedFields((prev) => {
+          const copy = { ...prev };
+          delete copy.owner_image;
+          return copy;
+        });
+      } else if (type === "cover") {
+        setCoverFileList([]);
+        setChangedFields((prev) => {
+          const copy = { ...prev };
+          delete copy.coverImage;
+          return copy;
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete image");
+    }
+  };
 
   return (
     <Modal
@@ -269,23 +282,10 @@ export default function EditGymModal({ open, onClose, data }) {
             maxCount={1}
             beforeUpload={() => false}
             onChange={handleCoverImageChange}
+            onRemove={(file) => handleDeleteImage(file, "cover")}
             showUploadList={{ showRemoveIcon: true }}
           >
             {coverFileList.length === 0 && <UploadOutlined />}
-          </Upload>
-        </Form.Item>
-
-        {/* Gallery Images */}
-        <Form.Item label="Gallery Images">
-          <Upload
-            listType="picture-card"
-            fileList={galleryFileList}
-            multiple
-            beforeUpload={() => false}
-            onChange={handleGalleryChange}
-            showUploadList={{ showRemoveIcon: true }}
-          >
-            <UploadOutlined /> Upload
           </Upload>
         </Form.Item>
 
@@ -297,6 +297,7 @@ export default function EditGymModal({ open, onClose, data }) {
             maxCount={1}
             beforeUpload={() => false}
             onChange={handleOwnerImageChange}
+            onRemove={(file) => handleDeleteImage(file, "owner")}
             showUploadList={{ showRemoveIcon: true }}
           >
             {ownerFileList.length === 0 && <UploadOutlined />}

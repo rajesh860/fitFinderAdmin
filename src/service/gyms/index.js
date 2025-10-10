@@ -150,6 +150,14 @@ export const gymList = createApi({
       }),
       invalidatesTags: ["collection"],
     }),
+    deleteGalleryImage: builder.mutation({
+      query: (body) => ({
+        url: `/gym/delete-gallery-image`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["gym"],
+    }),
   }),
 });
 
@@ -176,4 +184,5 @@ export const {
   useGymProfileQuery,
   useRejectedGymMutation,
   useSuspendGymMutation,
+  useDeleteGalleryImageMutation,
 } = gymList;

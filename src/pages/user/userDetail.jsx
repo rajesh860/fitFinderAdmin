@@ -5,7 +5,11 @@ import GoalProgress from "../../component/userDetailCom/attendanceSummary/goalPr
 import AttendanceCalendar from "../../component/userDetailCom/attendanceCalendar";
 import ProgressHistory from "../../component/userDetailCom/progressHistoryTable";
 import "./styles.scss";
-import { useGetUserDetailQuery } from "../../service/user/allUser";
+import {
+  useGetUserPlanHistoryQuery,
+  useGetUserDetailQuery,
+  useGetMemberAttendanceQuery,
+} from "../../service/user/allUser";
 import {
   useAddProgressMutation,
   useGetProgressQuery,
@@ -16,14 +20,40 @@ import Insights from "../../component/userDetailCom/attendanceSummary/insight";
 import AddMemberProgress from "../../component/modal/addMemberProgress";
 import { Button } from "antd";
 import { toast } from "react-toastify";
+import { skipToken } from "@reduxjs/toolkit/query";
 
 const UserDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // memberId
 
   const [userData, setUserData] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data: getProgress, refetch } = useGetProgressQuery(id);
+  const [selectedMembershipId, setSelectedMembershipId] = useState(null);
+
   const { data, isLoading, isError } = useGetUserDetailQuery(id);
+  const { data: getProgress, refetch } = useGetProgressQuery(id);
+
+  const gymId = data?.user?.currentMembership?.gymId;
+
+  // ✅ Get Plan History
+  const { data: planHistory, isLoading: planLoading } = useGetUserPlanHistoryQuery(
+    gymId && id ? { gymId, memberId: id } : skipToken
+  );
+
+  // ✅ Default plan set
+  useEffect(() => {
+    if (planHistory?.data?.length > 0 && !selectedMembershipId) {
+      setSelectedMembershipId(planHistory.data[0]._id);
+    }
+  }, [planHistory, selectedMembershipId]);
+
+  // ✅ Attendance fetch based on plan
+  const { data: getMemberAttendance } = useGetMemberAttendanceQuery(
+    selectedMembershipId && id
+      ? { membershipId: selectedMembershipId, memberId: id }
+      : skipToken
+  );
+
+  const attendanceArray = getMemberAttendance?.data?.attendance || [];
 
   useEffect(() => {
     if (data?.success) {
@@ -41,9 +71,6 @@ const UserDetail = () => {
       });
     }
   }, [data]);
-
-  const membership_end = data?.user?.currentMembership?.membership_end;
-  const membership_start = data?.user?.currentMembership?.membership_start;
 
   const showModal = () => setIsModalOpen(true);
 
@@ -74,12 +101,14 @@ const UserDetail = () => {
 
   return (
     <div className="user-detail-container">
+      {/* ➕ Add Progress Modal */}
       <AddMemberProgress
         handleAddProgress={handleAddProgress}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
       />
 
+      {/* ✅ Header */}
       <div className="header-row">
         <div className="title">
           <h2>Gym Member Dashboard</h2>
@@ -96,35 +125,45 @@ const UserDetail = () => {
         </div>
       </div>
 
+      {/* ✅ Top Section */}
       <div className="top-col">
+        {/* Profile Info */}
         <div className="profile-col">
           <ProfileCard userData={userData} />
         </div>
 
+        {/* Current Progress + Attendance */}
         <div className="current-progress">
           <h3>Current Progress</h3>
           <BodyStats progress={getProgress?.data?.current} />
+
+          {/* ✅ Attendance Calendar with Dropdown Inside */}
           <AttendanceCalendar
-            attendanceData={data?.user?.currentMembership?.attendance}
-            membership_end={membership_end}
-            membership_start={membership_start}
+            attendanceData={attendanceArray}
+            membership_end={
+              planHistory?.data?.find((p) => p._id === selectedMembershipId)
+                ?.membership_end
+            }
+            membership_start={
+              planHistory?.data?.find((p) => p._id === selectedMembershipId)
+                ?.membership_start
+            }
+            planHistory={planHistory}
+            selectedMembershipId={selectedMembershipId}
+            setSelectedMembershipId={setSelectedMembershipId}
+            planLoading={planLoading}
           />
         </div>
 
+        {/* Attendance Summary */}
         <div className="attendance-summery">
-          <AttendanceSummary
-            attendanceData={data?.user?.currentMembership?.attendance || []}
-          />
-          <Insights
-            attendanceData={data?.user?.currentMembership?.attendance || []}
-          />
-          <GoalProgress
-            attendanceData={data?.user?.currentMembership?.attendance || []}
-            monthlyTarget={30}
-          />
+          <AttendanceSummary attendanceData={attendanceArray} />
+          <Insights attendanceData={attendanceArray} />
+          <GoalProgress attendanceData={attendanceArray} monthlyTarget={30} />
         </div>
       </div>
 
+      {/* ✅ Footer */}
       <div className="footer-table">
         <ProgressHistory progressData={getProgress?.data} />
       </div>

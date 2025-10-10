@@ -8,12 +8,13 @@ import {
 } from "@ant-design/icons";
 import "./styles.scss";
 import moment from "moment";
+import userImg from "../../../assets/img/user.png"
 
 const ProfileCard = ({ userData }) => {
   return (
     <div className="profile-card">
       <img
-        src={userData?.photo}
+        src={userData?.photo || userImg}
         alt="Profile"
         className="profile-image"
       />

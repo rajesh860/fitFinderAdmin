@@ -16,6 +16,7 @@ import {
   useAddPendingPaymentMutation,
   useGetFeesCollectionQuery,
 } from "../../service/gyms";
+import moment from "moment";
 
 const { Option } = Select;
 
@@ -48,8 +49,8 @@ const FeesCollection = () => {
       status: item.status === "pending" ? "Pending" : "Paid",
       paymentDate:
         item.payments?.[0]?.date &&
-        new Date(item.payments[0].date).toLocaleDateString(),
-      nextDueDate: item.endDate && new Date(item.endDate).toLocaleDateString(),
+       moment(item.payments[0].date).format("DD MMM YYYY") ,
+      nextDueDate: item.endDate && moment(item.endDate).format("DD MMM YYYY") ,
       payments: item.payments || [],
     })) || [];
 
@@ -113,9 +114,9 @@ const FeesCollection = () => {
           >
             Add Payment
           </Button>
-          <Button type="link" danger>
+          {/* <Button type="link" danger>
             Delete
-          </Button>
+          </Button> */}
         </Space>
       ),
     },

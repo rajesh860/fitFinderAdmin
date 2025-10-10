@@ -31,6 +31,16 @@
 }
   .content-section {
     margin-top: 24px;
+    .gallery-card{
+      width: 100%;
+      .ant-list-item{
+        width: 100%;
+
+      }
+      .ant-image{
+        width: 100%;
+      }
+    }
   }
 
   .card {
@@ -59,7 +69,26 @@
       line-height: 1.6;
     }
   }
-
+.img-div{
+  position: relative;
+  .dlt-icon{
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: 2px;
+    right: 2px;
+    z-index: 999;
+    border-radius:100px;
+    background-color: rgb(33, 33, 33);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    svg{
+      color: red;
+    }
+  }
+  
+}
   /* GALLERY */
   .gallery-img {
     width: 100%;
@@ -145,3 +174,6 @@ margin-top: 20px;
     }
   }
 }
+
+
+
