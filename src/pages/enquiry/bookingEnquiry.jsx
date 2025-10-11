@@ -9,6 +9,9 @@ import {
   Form,
   InputNumber,
   Input,
+  Row,
+  Col,
+  DatePicker,
 } from "antd";
 import {
   useBookingApproveMutation,
@@ -20,6 +23,7 @@ import PageHeader from "../../component/pageHeader";
 
 const BookingEnquiry = () => {
   const [searchText, setSearchText] = useState("");
+  const [isManual, setIsManual] = useState(false)
   const { data, isLoading: loading, refetch } = useGetBookingEnquiryQuery();
   const { data: gymPlan } = useGetMyPlanQuery();
   const [trigger, { data: approve }] = useBookingApproveMutation();
@@ -67,9 +71,13 @@ const BookingEnquiry = () => {
       paidAmount: values.paidAmount,
       paymentMode: values.paymentMode,
       remark: values.remark,
+        isManual: isManual,
+  startDate: values.startDate ? values.startDate.toISOString() : undefined,
+  endDate: values.endDate ? values.endDate.toISOString() : undefined,
     };
 
     try {
+      console.log(values)
       await trigger({ id: selectedRecord._id, planId: payload });
     } catch (err) {
       console.error(err);
@@ -195,94 +203,134 @@ const BookingEnquiry = () => {
         bordered
       />
 
-      <Modal
+        <Modal
         title="Approve Booking"
         open={isModalOpen}
         onCancel={() => {
           setIsModalOpen(false);
           setSelectedRecord(null);
           setSelectedPlan(null);
+          setIsManual(false);
           form.resetFields();
         }}
         footer={null}
+        width={700}
       >
         <Form form={form} layout="vertical" onFinish={handleStatusChange}>
-          {/* Plan Select */}
-          <Form.Item
-            label="Select Plan"
-            name="planId"
-            rules={[{ required: true, message: "Please select a plan" }]}
-          >
-            <Select
-              placeholder="Choose a plan"
-              value={selectedPlan}
-              onChange={handlePlanChange}
-            >
-              {gymPlan?.map((item) => (
-                <Select.Option key={item._id} value={item._id}>
-                  {item.planName} - ₹{item.price} ({item.durationInMonths} mo)
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+          <Row gutter={16}>
+            {/* Left Column */}
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label="Select Plan"
+                name="planId"
+                rules={[{ required: true, message: "Please select a plan" }]}
+              >
+                <Select
+                  placeholder="Choose a plan"
+                  value={selectedPlan}
+                  onChange={handlePlanChange}
+                >
+                  {gymPlan?.map((item) => (
+                    <Select.Option key={item._id} value={item._id}>
+                      {item.planName} - ₹{item.price} ({item.durationInMonths} mo)
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
 
-          {/* Total Amount - Disabled */}
-          <Form.Item label="Total Amount" name="totalAmount">
-            <InputNumber style={{ width: "100%" }} disabled />
-          </Form.Item>
+              <Form.Item label="Total Amount" name="totalAmount">
+                <InputNumber style={{ width: "100%" }} disabled />
+              </Form.Item>
 
-          {/* Duration - Disabled */}
-          <Form.Item label="Duration (Months)" name="durationInMonths">
-            <Input style={{ width: "100%" }} disabled />
-          </Form.Item>
+              <Form.Item label="Duration (Months)" name="durationInMonths">
+                <Input style={{ width: "100%" }} disabled />
+              </Form.Item>
 
-          {/* Paid Amount */}
-          <Form.Item
-            label="Paid Amount"
-            name="paidAmount"
-            rules={[{ required: true, message: "Enter paid amount" }]}
-          >
-            <InputNumber
-              style={{ width: "100%" }}
-              min={0}
-              onChange={handlePaidChange}
-            />
-          </Form.Item>
+              {/* Manual Dates Toggle */}
+              <Form.Item>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <Input
+                    type="checkbox"
+                    style={{ width: "fit-content" }}
+                    checked={isManual}
+                    onChange={(e) => setIsManual(e.target.checked)}
+                  />
+                  <span>Use Manual Start/End Dates</span>
+                </div>
+              </Form.Item>
 
-          {/* Pending Amount - Disabled */}
-          <Form.Item label="Pending Amount" name="pendingAmount">
-            <InputNumber style={{ width: "100%" }} disabled />
-          </Form.Item>
+              {isManual && (
+                <>
+                  <Form.Item
+                    label="Start Date"
+                    name="startDate"
+                    rules={[
+                      { required: true, message: "Please select start date" },
+                    ]}
+                  >
+                    <DatePicker style={{ width: "100%" }} />
+                  </Form.Item>
 
-          {/* Payment Mode */}
-          <Form.Item
-            label="Payment Mode"
-            name="paymentMode"
-            rules={[{ required: true, message: "Select payment mode" }]}
-          >
-            <Select placeholder="Select Mode">
-              <Select.Option value="cash">Cash</Select.Option>
-              <Select.Option value="upi">UPI</Select.Option>
-              <Select.Option value="card">Card</Select.Option>
-              <Select.Option value="bank">Bank Transfer</Select.Option>
-            </Select>
-          </Form.Item>
+                  <Form.Item
+                    label="End Date"
+                    name="endDate"
+                    rules={[
+                      { required: true, message: "Please select end date" },
+                    ]}
+                  >
+                    <DatePicker style={{ width: "100%" }} />
+                  </Form.Item>
+                </>
+              )}
+            </Col>
 
-          {/* Remark */}
-          <Form.Item label="Remark" name="remark">
-            <Input.TextArea rows={2} placeholder="Any remark" />
-          </Form.Item>
+            {/* Right Column */}
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label="Paid Amount"
+                name="paidAmount"
+                rules={[{ required: true, message: "Enter paid amount" }]}
+              >
+                <InputNumber
+                  style={{ width: "100%" }}
+                  min={0}
+                  onChange={handlePaidChange}
+                />
+              </Form.Item>
 
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              block
-              disabled={!selectedPlan}
-            >
-              Approve Booking
-            </Button>
-          </Form.Item>
+              <Form.Item label="Pending Amount" name="pendingAmount">
+                <InputNumber style={{ width: "100%" }} disabled />
+              </Form.Item>
+
+              <Form.Item
+                label="Payment Mode"
+                name="paymentMode"
+                rules={[{ required: true, message: "Select payment mode" }]}
+              >
+                <Select placeholder="Select Mode">
+                  <Select.Option value="cash">Cash</Select.Option>
+                  <Select.Option value="upi">UPI</Select.Option>
+                  <Select.Option value="card">Card</Select.Option>
+                  <Select.Option value="bank">Bank Transfer</Select.Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item label="Remark" name="remark">
+                <Input.TextArea rows={2} placeholder="Any remark" />
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  block
+                  disabled={!selectedPlan}
+                >
+                  Approve Booking
+                </Button>
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </Modal>
     </div>
