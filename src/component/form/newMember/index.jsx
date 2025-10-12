@@ -18,6 +18,7 @@ const plngBg = {
   SILVER: "gray",
   GOLD: "gold",
   PLATINUM: "purple",
+  
 };
 
 const MemberRegistrationForm = () => {

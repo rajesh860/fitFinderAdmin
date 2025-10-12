@@ -45,7 +45,7 @@ export const allUser = createApi({
    getUserPlanHistory: builder.query({
   query: ({ gymId, memberId }) => ({
     url: `/user/get-plan-history?gymId=${gymId}&memberId=${memberId}`,
-    method: "POST",
+    method: "GET",
   }),
 }),
   }),
