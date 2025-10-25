@@ -136,8 +136,8 @@ export const gymList = createApi({
       }),
     }),
     getFeesCollection: builder.query({
-      query: () => ({
-        url: `/gym/get-fees-collection`,
+      query: (fee_status) => ({
+        url: `/gym/get-fees-collection?fee_status=${fee_status}`,
         method: "GET",
       }),
       providesTags: ["collection"], // 👈 is query ka tag

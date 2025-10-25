@@ -6,6 +6,7 @@ import { login } from "./auth";
 import { plans } from "./plans/indx";
 import { gymList } from "./gyms";
 import { getImagesUrl } from "./feedback";
+import { trainer } from "./trainer";
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     [plans.reducerPath]: plans.reducer,
     [gymList.reducerPath]: gymList.reducer,
     [getImagesUrl.reducerPath]: getImagesUrl.reducer,
+    [trainer.reducerPath]: trainer.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -24,4 +26,5 @@ export const store = configureStore({
       .concat(plans.middleware)
       .concat(getImagesUrl.middleware)
       .concat(gymList.middleware)
+      .concat(trainer.middleware)
 });

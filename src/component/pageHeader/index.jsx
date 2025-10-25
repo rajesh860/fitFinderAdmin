@@ -8,6 +8,7 @@ const PageHeader = ({
   searchPlaceholder = "Search...",
   searchText = "",
   onSearchChange = () => {},
+  inputShown = true,
 }) => {
   return (
     <div
@@ -33,20 +34,22 @@ const PageHeader = ({
             </Breadcrumb.Item>
           ))}
         </Breadcrumb>
-
+{
+  inputShown &&
         <Input
-          placeholder={searchPlaceholder}
-          value={searchText}
-          onChange={(e) => onSearchChange(e.target.value)}
-          prefix={<SearchOutlined style={{ color: "white" }} />}
-          style={{
-            width: 300,
-            color: "white",
-            borderColor: "white",
-            backgroundColor: "transparent",
-          }}
-          className="white-input"
+        placeholder={searchPlaceholder}
+        value={searchText}
+        onChange={(e) => onSearchChange(e.target.value)}
+        prefix={<SearchOutlined style={{ color: "white" }} />}
+        style={{
+          width: 300,
+          color: "white",
+          borderColor: "white",
+          backgroundColor: "transparent",
+        }}
+        className="white-input"
         />
+      }
       </div>
     </div>
   );

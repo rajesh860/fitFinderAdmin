@@ -11,12 +11,14 @@ import {
   EditOutlined,
   UploadOutlined,
   DeleteOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import "./styles.scss";
 import GymBanner from "../../component/gymProfileComponent/GymBanner";
 import { useDeleteGalleryImageMutation, useGymProfileQuery, useUpdarteGymProfileMutation } from "../../service/gyms";
 import EditGymModal from "../../component/modal/EditGymModal";
 import { toast } from "react-toastify";
+import OwnerImage from "../../component/ownerImageUpload";
 
 const { Text } = Typography;
 
@@ -104,7 +106,7 @@ const GymProfile = () => {
     <div className="gym-profile">
       {/* 🔹 Top Banner */}
       <div className="banner-wrapper">
-        <GymBanner coverImage={coverImage} gymName={gymName} />
+        <GymBanner coverImage={coverImage} gymName={gymName} gymId={data?.data?._id}/>
         <Button
           type="primary"
           icon={<EditOutlined />}
@@ -191,30 +193,8 @@ const GymProfile = () => {
         {/* RIGHT SIDE */}
         <Col xs={24} lg={8}>
           {/* 👤 OWNER */}
-          <Card
-            title={
-              <>
-                <UserOutlined /> Owner
-              </>
-            }
-            className="card owner-card"
-          >
-            <div className="owner-details">
-              <Avatar size={80} src={ownerImgSrc} className="owner-avatar" />
-              <h3 className="owner-name">{owner_name || name}</h3>
-              {gymCertificates?.length > 0 ? (
-                gymCertificates.map((cert, i) => (
-                  <Tag key={i} color="magenta" className="owner-tag">
-                    {cert}
-                  </Tag>
-                ))
-              ) : (
-                <Tag color="red" className="owner-tag">
-                  No Certificate
-                </Tag>
-              )}
-            </div>
-          </Card>
+    <OwnerImage gymId={data?.data?._id} owner_name={owner_name} gymCertificates={gymCertificates} ownerImgSrc={ownerImgSrc} uploading={uploading} setUploading={setUploading} uploadGalleryImage={uploadGalleryImage}/>
+
 
           {/* ☎️ CONTACT INFO */}
           <Card

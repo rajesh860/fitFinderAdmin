@@ -18,6 +18,9 @@ import BookingEnquiry from "../pages/enquiry/bookingEnquiry";
 import Dashboard from "../pages/dashboard";
 import CreatePlanName from "../pages/createPlanName";
 import FeesCollection from "../pages/feesCollection";
+import TrainerRegisterForm from "../pages/trainerRegister";
+import TrainerList from "../pages/trainerList";
+import TrainerDetail from "../pages/trainerList/trainerDetail";
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -100,6 +103,18 @@ export const router = createBrowserRouter([
       {
         path: "/fees-collection",
         element: <FeesCollection />,
+      },
+      {
+        path: "/trainers/new",
+        element: <TrainerRegisterForm />,
+      },
+      {
+        path: "/trainers",
+        element: <TrainerList />,
+      },
+      {
+        path: "/trainers/:id",
+        element: <TrainerDetail />,
       },
       // {
       //   path: "*",

@@ -21,8 +21,9 @@ import moment from "moment";
 const { Option } = Select;
 
 const FeesCollection = () => {
+  const [feeStatusFilter, setFeeStatusFilter] = useState("");
   const [searchText, setSearchText] = useState("");
-  const { data: apiResponse, isLoading } = useGetFeesCollectionQuery();
+  const { data: apiResponse, isLoading } = useGetFeesCollectionQuery(feeStatusFilter);
   const [trigger, { isLoading: isAddingPayment }] =
     useAddPendingPaymentMutation();
 
@@ -34,6 +35,11 @@ const FeesCollection = () => {
     mode: "cash",
     remark: "",
   });
+
+  // 🔹 Fee Status Filter
+
+  if (isLoading) return <p>Loading...</p>;
+  if (!apiResponse?.data) return <p>No fee collection available</p>;
 
   // 🔹 Transform API data for Table
   const data =
@@ -49,10 +55,18 @@ const FeesCollection = () => {
       status: item.status === "pending" ? "Pending" : "Paid",
       paymentDate:
         item.payments?.[0]?.date &&
-       moment(item.payments[0].date).format("DD MMM YYYY") ,
-      nextDueDate: item.endDate && moment(item.endDate).format("DD MMM YYYY") ,
+        moment(item.payments[0].date).format("DD MMM YYYY"),
+      nextDueDate:
+        item.endDate && moment(item.endDate).format("DD MMM YYYY"),
       payments: item.payments || [],
     })) || [];
+
+  // 🔹 Apply Fee Status Filter
+  const filteredData = data.filter((item) =>
+    feeStatusFilter
+      ? item.status.toLowerCase() === feeStatusFilter.toLowerCase()
+      : true
+  );
 
   // 🔹 Summary Calculations
   const summary = apiResponse?.summary || {};
@@ -60,7 +74,7 @@ const FeesCollection = () => {
   const totalCollection = summary.totalCollection || 0;
   const totalPending = summary.totalPending || 0;
 
-  // 🔹 Columns
+  // 🔹 Table Columns
   const columns = [
     { title: "Member Name", dataIndex: "memberName", key: "memberName" },
     { title: "Email", dataIndex: "memberEmail", key: "memberEmail" },
@@ -114,9 +128,6 @@ const FeesCollection = () => {
           >
             Add Payment
           </Button>
-          {/* <Button type="link" danger>
-            Delete
-          </Button> */}
         </Space>
       ),
     },
@@ -175,10 +186,26 @@ const FeesCollection = () => {
         </Card>
       </div>
 
+      {/* 🔹 Fee Status Filter */}
+      <div style={{ marginBottom: 16 }}>
+        <Select
+          placeholder="Filter by Fee Status"
+          style={{ width: 200 }}
+          // defaultValue={"paid"}
+          value={feeStatusFilter || "Select Status"}
+          onChange={(value) => setFeeStatusFilter(value)}
+          allowClear
+        >
+          <Option value="paid">Paid</Option>
+          <Option value="pending">Pending</Option>
+          <Option value="overdue">Over due</Option>
+        </Select>
+      </div>
+
       {/* 🔹 Table */}
       <div className="table-wrapper">
         <Table
-          dataSource={data}
+          dataSource={filteredData}
           columns={columns}
           pagination={{ pageSize: 10 }}
           loading={isLoading}

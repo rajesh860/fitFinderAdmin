@@ -33,9 +33,11 @@ const SidebarMenu = () => {
   const [collapsed, setCollapsed] = useState(false);
   const userRole = localStorage.getItem("userRole");
 
-  // Menu items for gym owner dashboard with corrected icons
   const menuItems = [
+    // 🔹 Main Dashboard
     { key: "/", icon: <HomeOutlined />, label: "Dashboard", path: "/" },
+
+    // 🔹 Gym Management (Admin Only)
     userRole === "admin"
       ? {
           key: "gym-management",
@@ -49,18 +51,20 @@ const SidebarMenu = () => {
               path: "/all-gyms",
             },
             {
-              key: "/pending-gyms",
+              key: "/new-registration",
               icon: <SolutionOutlined />,
-              label: "New Registration",
+              label: "New Gym Registrations",
               path: "/new-registration",
             },
           ],
         }
       : "",
+
+    // 🔹 Members & Trainers
     {
       key: "members",
       icon: <UsergroupAddOutlined />,
-      label: "Members",
+      label: "Users",
       children: [
         {
           key: "/members",
@@ -71,56 +75,66 @@ const SidebarMenu = () => {
         {
           key: "/members/new",
           icon: <PlusCircleOutlined />,
-          label: "Add New Member",
+          label: "Add Member",
           path: "/members/new",
         },
         {
-          key: "/members/checkins",
-          icon: <CheckCircleOutlined />,
-          label: "Check-ins",
-          path: "/members/checkins",
+          key: "/trainers/new",
+          icon: <PlusCircleOutlined />,
+          label: "Add Trainer",
+          path: "/trainers/new",
+        },
+        {
+          key: "/trainers",
+          icon: <TeamOutlined />,
+          label: "All Trainers",
+          path: "/trainers",
         },
       ],
     },
+
+    // 🔹 Enquiry Section
     {
       key: "enquiry",
-      icon: <UsergroupAddOutlined />,
-      label: "Enquiry",
+      icon: <SafetyCertificateOutlined />,
+      label: "Enquiries",
       children: [
         {
           key: "/enquiry/pending",
           icon: <CheckCircleOutlined />,
-          label: "Trial Enquiry",
+          label: "Pending Trials",
           path: "/enquiry/pending",
         },
         {
           key: "/enquiry/completed",
           icon: <CheckCircleOutlined />,
-          label: "Enquiry Completed",
+          label: "Completed Enquiries",
           path: "/enquiry/completed",
         },
         {
           key: "/enquiry/booking",
-          icon: <CheckCircleOutlined />,
-          label: "Booking",
+          icon: <CalendarOutlined />,
+          label: "Bookings",
           path: "/enquiry/booking",
         },
       ],
     },
+
+    // 🔹 Membership Plans
     {
-      key: "plan",
+      key: "plans",
       icon: <IdcardOutlined />,
-      label: "Membership Plan",
+      label: "Membership Plans",
       children: [
-        userRole == "admin"
+        userRole === "admin"
           ? {
-              key: "/create-plan name",
+              key: "/create-plan-name",
               icon: <PlusCircleOutlined />,
-              label: "Create Plan Name",
+              label: "Create Plan",
               path: "/create-plan-name",
             }
           : "",
-        userRole == "gym"
+        userRole === "gym"
           ? {
               key: "/create-gym-plan",
               icon: <PlusCircleOutlined />,
@@ -128,84 +142,51 @@ const SidebarMenu = () => {
               path: "/create-gym-plan",
             }
           : "",
-        userRole == "gym"
+        userRole === "gym"
           ? {
               key: "/all-plan",
-              icon: <PlusCircleOutlined />,
-              label: "All Plan",
+              icon: <TeamOutlined />,
+              label: "All Plans",
               path: "/all-plan",
             }
           : "",
       ],
     },
+
+    // 🔹 Financial Section
     {
       key: "financial",
       icon: <DollarOutlined />,
       label: "Financial",
       children: [
         {
-          key: "/fees",
+          key: "/fees-collection",
           icon: <DollarOutlined />,
           label: "Fee Collection",
           path: "/fees-collection",
         },
-        {
-          key: "/subscriptions",
-          icon: <SolutionOutlined />,
-          label: "Subscriptions",
-          path: "/subscriptions",
-        },
-        {
-          key: "/expenses",
-          icon: <DollarOutlined />,
-          label: "Expenses",
-          path: "/expenses",
-        },
-        {
-          key: "/reports",
-          icon: <PieChartOutlined />,
-          label: "Financial Reports",
-          path: "/reports",
-        },
       ],
     },
 
-    {
-      key: "/reports",
-      icon: <FileTextOutlined />,
-      label: "Reports & Analytics",
-      path: "/reports",
-    },
-    {
-      key: "/settings",
-      icon: <SettingOutlined />,
-      label: "Settings",
-      path: "/settings",
-    },
-    {
-      type: "divider",
-    },
+    // 🔹 Divider & Logout
+    { type: "divider" },
     {
       key: "/logout",
       icon: <LogoutOutlined />,
       label: "Logout",
-      // path: '/logout'
     },
   ];
 
   const handleMenuClick = (e) => {
     if (e.key === "/logout") {
-      // ✅ Logout logic
-      localStorage.clear(); // clear all local storage
+      localStorage.clear();
       window.location.replace("/login");
       return;
     }
-
     const clickedItem = findMenuItemByKey(menuItems, e.key);
     if (clickedItem && clickedItem.path) navigate(clickedItem.path);
   };
 
-  // Recursive function to find menu item by key (nested support)
   const findMenuItemByKey = (items, key) => {
     for (let item of items) {
       if (item.key === key) return item;
@@ -217,14 +198,12 @@ const SidebarMenu = () => {
     return null;
   };
 
-  // Get the selected keys based on current path
   const getSelectedKeys = () => {
     const path = location.pathname;
     const item = findMenuItemByKey(menuItems, path);
     return item ? [item.key] : [];
   };
 
-  // Get the open submenus based on current path
   const getOpenKeys = () => {
     const path = location.pathname;
     for (let item of menuItems) {
@@ -241,16 +220,16 @@ const SidebarMenu = () => {
       trigger={null}
       collapsible
       collapsed={collapsed}
-      width={210} // ✅ Main expanded width
-      collapsedWidth={60} // ✅ When collapsed, keep mini sidebar (icons visible)
+      width={210}
+      collapsedWidth={60}
       style={{
         overflow: "auto",
         height: "100vh",
         left: 0,
         top: 0,
         bottom: 0,
-        backgroundColor: "#1a1a1a", // ✅ Dark background
-        color: "white", // ✅ Text color white
+        backgroundColor: "#1a1a1a",
+        color: "white",
       }}
     >
       <div
@@ -274,9 +253,7 @@ const SidebarMenu = () => {
               <Title level={5} style={{ color: "white", margin: 0 }}>
                 Fit Finder
               </Title>
-              <span
-                style={{ color: "rgba(255, 255, 255, 0.65)", fontSize: 12 }}
-              >
+              <span style={{ color: "rgba(255, 255, 255, 0.65)", fontSize: 12 }}>
                 Admin Dashboard
               </span>
             </div>
@@ -297,14 +274,14 @@ const SidebarMenu = () => {
           borderRight: 0,
           padding: "8px 0",
           marginTop: 16,
-          backgroundColor: "#1a1a1a", // ✅ Match sidebar bg
-          color: "white", // ✅ White text
+          backgroundColor: "#1a1a1a",
+          color: "white",
         }}
         selectedKeys={getSelectedKeys()}
         defaultOpenKeys={getOpenKeys()}
         onClick={handleMenuClick}
         items={menuItems}
-        inlineIndent={10} // default is 24 → reduced
+        inlineIndent={10}
       />
     </Sider>
   );

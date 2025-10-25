@@ -54,7 +54,16 @@ const UserDetail = () => {
   );
 
   const attendanceArray = getMemberAttendance?.data?.attendance || [];
+// const uniqueAttendance = [];
+// const seenDates = new Set();
 
+// attendanceArray.forEach((item) => {
+//   const formattedDate = dayjs(item.date).format("YYYY-MM-DD"); // normalize date
+//   if (!seenDates.has(formattedDate)) {
+//     seenDates.add(formattedDate);
+//     uniqueAttendance.push(item);
+//   }
+// });
   useEffect(() => {
     if (data?.success) {
       setUserData({
@@ -98,7 +107,7 @@ const UserDetail = () => {
       refetch();
     }
   }, [apiResponse, refetch]);
-
+console.log(attendanceArray,"attendanceArray")
   return (
     <div className="user-detail-container">
       {/* ➕ Add Progress Modal */}

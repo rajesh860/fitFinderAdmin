@@ -1,0 +1,11 @@
+/* styles.css ya styles.scss */
+.dark-input {
+  background-color: #1a1a1a;
+  color: #fff;
+  border: 1px solid #333;
+}
+
+.dark-input::placeholder {
+  color: #aaa; /* placeholder color */
+  opacity: 1; /* Firefox fix */
+}
