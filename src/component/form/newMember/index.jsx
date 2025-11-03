@@ -110,6 +110,7 @@ const MemberRegistrationForm = () => {
                   prefix={<UserOutlined />}
                   placeholder="Name"
                   size="large"
+                  
                   style={{
                     backgroundColor: "#0d1117",
                     borderColor: "#30363d",

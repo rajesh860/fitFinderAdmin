@@ -254,11 +254,12 @@ const NewEnquiry = () => {
           dataSource={filteredData}
           rowKey={(record) => record._id}
           loading={loading}
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: false,
-            itemRender: (_, type, originalElement) => originalElement,
-          }}
+          // pagination={{
+          //   pageSize: 10,
+          //   showSizeChanger: false,
+          //   itemRender: (_, type, originalElement) => originalElement,
+          // }}
+             pagination={false}
           bordered
           style={{ background: "#0D0D0D", color: "#fff", borderColor: "#333" }}
           rowClassName={() => "dark-table-row"}

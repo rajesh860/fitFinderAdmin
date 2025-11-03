@@ -73,7 +73,7 @@ const UserDetail = () => {
         photo: data?.user?.photo,
         dob: data?.user?.dob,
         planName: data?.user?.currentMembership?.planName,
-        address: data?.user?.currentMembership?.address,
+        address: data?.user?.address,
         planPrice: data?.user?.currentMembership?.planPrice,
         membership_status: data?.user?.currentMembership?.membership_status,
         membership_end: data?.user?.currentMembership?.membership_end,
@@ -107,7 +107,6 @@ const UserDetail = () => {
       refetch();
     }
   }, [apiResponse, refetch]);
-console.log(attendanceArray,"attendanceArray")
   return (
     <div className="user-detail-container">
       {/* ➕ Add Progress Modal */}

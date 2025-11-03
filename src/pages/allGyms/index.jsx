@@ -174,7 +174,8 @@ const AllGymList = () => {
         dataSource={filteredData}
         rowKey="_id"
         loading={loading}
-        pagination={{ pageSize: 10 }}
+        // pagination={{ pageSize: 10 }}
+           pagination={false}
         bordered
       />
 

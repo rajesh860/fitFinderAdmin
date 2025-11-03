@@ -1,0 +1,230 @@
+.trainer-detail {
+  background-color: #0d0d0d;
+  color: #fff;
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: "Inter", sans-serif;
+
+  h2 {
+    color: #ff7a00;
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+  }
+
+  /* Header */
+  .trainer-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+
+    .trainer-photo img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #ff7a00;
+      box-shadow: 0 0 15px rgba(255, 122, 0, 0.4);
+    }
+
+    .trainer-info {
+      h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .rating {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        color: #ffb74d;
+
+        .icon {
+          fill: #ffb74d;
+        }
+
+        small {
+          color: #9e9e9e;
+        }
+      }
+
+      .actions {
+        margin-top: 1rem;
+        display: flex;
+        gap: 1rem;
+
+        .follow-btn,
+        .message-btn {
+          background: none;
+          border: 1px solid #ff7a00;
+          color: #ff7a00;
+          padding: 0.4rem 1rem;
+          border-radius: 25px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background-color: #ff7a00;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 122, 0, 0.6);
+          }
+        }
+
+        .message-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+        }
+      }
+    }
+  }
+
+  /* Bio */
+  .trainer-bio {
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 1.2rem;
+    margin-bottom: 2rem;
+
+    p {
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    .specialization {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+
+      .spec-tag {
+        background: #262626;
+        border-radius: 20px;
+        padding: 0.3rem 0.8rem;
+        color: #ff7a00;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+      }
+    }
+  }
+
+  /* Availability */
+  .trainer-availability {
+    .days {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .day-card {
+      background: #1a1a1a;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+
+      h3 {
+        color: #ff7a00;
+        margin-bottom: 0.5rem;
+      }
+
+      .slot {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+        color: #ccc;
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+      }
+
+      .gym-slot {
+        font-size: 0.85rem;
+        color: #aaa;
+      }
+    }
+  }
+
+  /* Plans */
+  .trainer-plans {
+    margin-top: 2rem;
+
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .plan-card {
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid #ff7a00;
+      box-shadow: 0 0 20px rgba(255, 122, 0, 0.15);
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 25px rgba(255, 122, 0, 0.3);
+      }
+
+      .price {
+        color: #ff7a00;
+        font-size: 1.3rem;
+        margin: 0.5rem 0;
+      }
+
+      ul {
+        margin-top: 0.5rem;
+        li {
+          color: #ccc;
+          font-size: 0.9rem;
+        }
+      }
+
+      .subscribe-btn {
+        margin-top: 1rem;
+        background: linear-gradient(90deg, #ff7a00, #ff3d00);
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+
+        &:hover {
+          box-shadow: 0 0 15px rgba(255, 122, 0, 0.6);
+        }
+      }
+    }
+  }
+
+  /* Gallery */
+  .trainer-gallery {
+    margin-top: 2rem;
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+
+      .gallery-img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 2px solid #1a1a1a;
+        transition: all 0.3s;
+
+        &:hover {
+          transform: scale(1.05);
+          border-color: #ff7a00;
+          box-shadow: 0 0 15px rgba(255, 122, 0, 0.3);
+        }
+      }
+    }
+  }
+}

@@ -151,7 +151,7 @@ const BookingEnquiry = () => {
               title="Are you sure to reject this booking?"
               onConfirm={() => handleStatusChange({ status: "rejected" })}
             >
-              <Button type="danger">Reject</Button>
+              <Button danger type="primary">Reject</Button>
             </Popconfirm>
           </div>
         ) : (
@@ -199,7 +199,8 @@ const BookingEnquiry = () => {
         dataSource={filteredData}
         rowKey={(record) => record._id}
         loading={loading}
-        pagination={{ pageSize: 10 }}
+           pagination={false}
+        // pagination={{ pageSize: 10 }}
         bordered
       />
 

@@ -15,10 +15,17 @@ export const trainer = createApi({
         body
       })
     }),
+    getTrainerDetail: builder.query({
+      query: (id) =>({
+        url: `/trainer/detail/${id}`,
+        method: "GET",
+      })
+    }),
    
   }),
+
 })
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGymTrainerListQuery } = trainer
+export const { useGetTrainerDetailQuery,useGymTrainerListQuery } = trainer

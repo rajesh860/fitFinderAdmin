@@ -34,7 +34,9 @@ body {
 
     }
 } */
-
+.custom-input::placeholder {
+  color: #6e7681 !important;
+}
 .custom-table {
     .ant-table-thead > tr > th {
         background: $card-bg;

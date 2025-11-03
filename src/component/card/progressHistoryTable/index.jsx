@@ -187,7 +187,8 @@ const ProgressHistoryTable = ({ getProgressHistory }) => {
           columns={columns}
           dataSource={getProgressHistory}
           rowKey="_id"
-          pagination={{ pageSize: 5 }}
+          // pagination={{ pageSize: 5 }}
+          pagination={false}
         />
 
         <Modal

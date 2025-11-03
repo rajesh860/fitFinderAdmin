@@ -12,7 +12,7 @@ import PageHeader from "../../component/pageHeader";
 
 const AllUser = () => {
   const [searchText, setSearchText] = useState("");
-  const { data, isLoading: loading } = useGetAllUserQuery();
+  const { data, isLoading: loading } = useGetAllUserQuery(searchText);
   const [trigger] = useChangeFeesStatusMutation();
   const [deleteUser] = useDeleteMemberMutation();
   const nav = useNavigate();
@@ -59,7 +59,11 @@ const AllUser = () => {
   };
 
   // Table Columns
-  const columns = [
+  const columns = [  {
+      title: "User id",
+      dataIndex: "userId",
+      key: "userId",
+    },
     {
       title: "Name",
       dataIndex: "name",
@@ -155,6 +159,7 @@ const AllUser = () => {
           rowKey="id"
           loading={loading}
           bordered
+          pagination={false}
         />
       </div>
 

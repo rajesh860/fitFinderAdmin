@@ -32,7 +32,7 @@ const SidebarMenu = () => {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const userRole = localStorage.getItem("userRole");
-
+console.log(userRole,"userRole")
   const menuItems = [
     // 🔹 Main Dashboard
     { key: "/", icon: <HomeOutlined />, label: "Dashboard", path: "/" },

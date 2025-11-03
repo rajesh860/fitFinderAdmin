@@ -113,7 +113,7 @@ export const router = createBrowserRouter([
         element: <TrainerList />,
       },
       {
-        path: "/trainers/:id",
+        path: "/trainer/:id",
         element: <TrainerDetail />,
       },
       // {

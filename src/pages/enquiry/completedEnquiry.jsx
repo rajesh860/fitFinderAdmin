@@ -93,7 +93,8 @@ const CompletedEnquiry = () => {
           dataSource={filteredData}
           rowKey={(record) => record._id}
           loading={loading}
-          pagination={{ pageSize: 10 }}
+          // pagination={{ pageSize: 10 }}
+             pagination={false}
           bordered
         />
       </div>

@@ -93,7 +93,8 @@ const TrainerList = () => {
           columns={columns}
           rowKey={record => record._id}
           loading={isLoading}
-          pagination={{ pageSize: 10 }}
+          // pagination={{ pageSize: 10 }}
+             pagination={false}
           style={{ color: "#fff" }}
         />
       </Card>

@@ -161,7 +161,8 @@ if(approved?.success || rejected?.success){
         dataSource={filteredData}
         rowKey="id"
         loading={loading}
-        pagination={{ pageSize: 10 }}
+           pagination={false}
+        // pagination={{ pageSize: 10 }}
         bordered
       />
 

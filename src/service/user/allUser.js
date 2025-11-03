@@ -8,8 +8,8 @@ export const allUser = createApi({
     tagTypes: ["User"], // 👈 tags declare karne padte hain
   endpoints: (builder) => ({
     getAllUser: builder.query({
-      query: (body) =>({
-        url: `/user/list`,
+      query: (search) =>({
+        url: `/user/list?search=${search}`,
         method: "GET",
       }),
       providesTags: ["User"], // 👈 is query ka tag

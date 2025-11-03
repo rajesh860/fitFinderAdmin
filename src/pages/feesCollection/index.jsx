@@ -207,7 +207,8 @@ const FeesCollection = () => {
         <Table
           dataSource={filteredData}
           columns={columns}
-          pagination={{ pageSize: 10 }}
+          // pagination={{ pageSize: 10 }}
+             pagination={false}
           loading={isLoading}
           className="custom-table"
         />
