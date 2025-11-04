@@ -136,12 +136,12 @@ export const gymList = createApi({
       }),
     }),
     getFeesCollection: builder.query({
-      query: (fee_status) => ({
-        url: `/gym/get-fees-collection?fee_status=${fee_status}`,
-        method: "GET",
-      }),
-      providesTags: ["collection"], // 👈 is query ka tag
-    }),
+  query: ({ fee_status, searchText }) => ({
+    url: `/gym/get-fees-collection?fee_status=${fee_status || ""}&searchText=${searchText || ""}`,
+    method: "GET",
+  }),
+  providesTags: ["collection"],
+}),
     addPendingPayment: builder.mutation({
       query: (body) => ({
         url: `/gym/add-pending-payment`,
@@ -158,12 +158,21 @@ export const gymList = createApi({
       }),
       invalidatesTags: ["gym"],
     }),
+    renewPlan: builder.mutation({
+      query: (body) => ({
+        url: `/gym/renew-plan`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["gym"],
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const {
+  useRenewPlanMutation,
   useAddPendingPaymentMutation,
   useGetFeesCollectionQuery,
   useEditProgressMutation,

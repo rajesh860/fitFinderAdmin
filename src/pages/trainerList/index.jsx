@@ -21,6 +21,11 @@ const TrainerList = () => {
   const demoAvatar = "https://xsgames.co/randomusers/avatar.php?g=male"; // fallback image
 
   const columns = [
+        { 
+      title: "User id", 
+      key: "userId",
+      render: (_, record) =>record.user?.userId || "-"
+    },
     { 
       title: "Name", 
       key: "name",

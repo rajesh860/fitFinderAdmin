@@ -11,4 +11,10 @@
     .ant-select-selection-overflow-item{
         background-color: #1F1F1F;
     }
+    input::placeholder {
+  color: #8b949e !important;
+}
+.ant-picker-input >input[disabled]{
+    color: gray;
+}
 }

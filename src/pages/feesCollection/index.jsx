@@ -6,45 +6,47 @@ import {
   Space,
   Button,
   Card,
-  Modal,
-  Input,
   Select,
-  message,
 } from "antd";
 import PageHeader from "../../component/pageHeader";
 import {
-  useAddPendingPaymentMutation,
   useGetFeesCollectionQuery,
 } from "../../service/gyms";
 import moment from "moment";
+import { useGetMyPlanQuery } from "../../service/plans/indx";
+import RenewModal from "../../component/modal/renewModal";
+import AddPaymentModel from "../../component/modal/addPaymentModel";
 
 const { Option } = Select;
 
 const FeesCollection = () => {
   const [feeStatusFilter, setFeeStatusFilter] = useState("");
   const [searchText, setSearchText] = useState("");
-  const { data: apiResponse, isLoading } = useGetFeesCollectionQuery(feeStatusFilter);
-  const [trigger, { isLoading: isAddingPayment }] =
-    useAddPendingPaymentMutation();
 
-  // 🔹 Modal State
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedFee, setSelectedFee] = useState(null);
-  const [paymentData, setPaymentData] = useState({
-    amount: "",
-    mode: "cash",
-    remark: "",
+  const { data: apiResponse, isLoading } = useGetFeesCollectionQuery({
+    fee_status: feeStatusFilter,
+    searchText,
   });
 
-  // 🔹 Fee Status Filter
+
+  const { data: gymPlan, isLoading: planLoading } = useGetMyPlanQuery();
+
+  // 🔹 Modal States
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isRenewModalVisible, setIsRenewModalVisible] = useState(false);
+  const [selectedFee, setSelectedFee] = useState(null);
+
+ 
 
   if (isLoading) return <p>Loading...</p>;
   if (!apiResponse?.data) return <p>No fee collection available</p>;
 
-  // 🔹 Transform API data for Table
+  // ✅ Map API data to Table rows
   const data =
     apiResponse?.data?.map((item) => ({
+      userId:item.member?.user?.userId,
       key: item._id,
+      memberId: item.member?._id || "", // ✅ Add memberId here
       memberName: item.member?.user?.name || "-",
       memberEmail: item.member?.user?.email || "-",
       memberPhone: item.member?.user?.phone || "-",
@@ -56,26 +58,24 @@ const FeesCollection = () => {
       paymentDate:
         item.payments?.[0]?.date &&
         moment(item.payments[0].date).format("DD MMM YYYY"),
-      nextDueDate:
-        item.endDate && moment(item.endDate).format("DD MMM YYYY"),
+      nextDueDate: item.endDate && moment(item.endDate).format("DD MMM YYYY"),
       payments: item.payments || [],
     })) || [];
 
-  // 🔹 Apply Fee Status Filter
   const filteredData = data.filter((item) =>
     feeStatusFilter
       ? item.status.toLowerCase() === feeStatusFilter.toLowerCase()
       : true
   );
 
-  // 🔹 Summary Calculations
   const summary = apiResponse?.summary || {};
   const totalFees = summary.totalFees || 0;
   const totalCollection = summary.totalCollection || 0;
   const totalPending = summary.totalPending || 0;
 
-  // 🔹 Table Columns
+ 
   const columns = [
+    {title:"user id",dataIndex:"userId",key:"userId"},
     { title: "Member Name", dataIndex: "memberName", key: "memberName" },
     { title: "Email", dataIndex: "memberEmail", key: "memberEmail" },
     { title: "Phone", dataIndex: "memberPhone", key: "memberPhone" },
@@ -122,46 +122,28 @@ const FeesCollection = () => {
             type="primary"
             onClick={() => {
               setSelectedFee(record);
-              setPaymentData({ amount: "", mode: "cash", remark: "" });
               setIsModalVisible(true);
             }}
           >
             Add Payment
+          </Button>
+          <Button
+            type="primary"
+            style={{ backgroundColor: "#f59e0b", borderColor: "#f59e0b" }}
+            onClick={() => {
+              setSelectedFee(record); // ✅ record me memberId hai
+              setIsRenewModalVisible(true);
+            }}
+          >
+            Renew Plan
           </Button>
         </Space>
       ),
     },
   ];
 
-  // 🔹 Handle Add Payment
-  const handleAddPayment = async () => {
-    if (
-      !paymentData.amount ||
-      isNaN(paymentData.amount) ||
-      Number(paymentData.amount) <= 0
-    ) {
-      return message.error("Please enter a valid amount");
-    }
-
-    try {
-      await trigger({
-        feeCollectionId: selectedFee.key,
-        amount: Number(paymentData.amount),
-        mode: paymentData.mode,
-        remark: paymentData.remark,
-      }).unwrap();
-
-      message.success("Payment added successfully");
-      setIsModalVisible(false);
-    } catch (err) {
-      console.error(err);
-      message.error(err?.data?.message || "Failed to add payment");
-    }
-  };
-
   return (
     <div className="fees-collection-container">
-      {/* 🔹 Header */}
       <PageHeader
         title="Fees Collection"
         breadcrumbs={["Financial", "Fees Collection"]}
@@ -170,7 +152,7 @@ const FeesCollection = () => {
         onSearchChange={setSearchText}
       />
 
-      {/* 🔹 Summary Cards */}
+      {/* Summary Cards */}
       <div className="summary-cards">
         <Card className="summary-card" bordered={false}>
           <h3>Total Fees</h3>
@@ -186,12 +168,11 @@ const FeesCollection = () => {
         </Card>
       </div>
 
-      {/* 🔹 Fee Status Filter */}
+      {/* Filter */}
       <div style={{ marginBottom: 16 }}>
         <Select
           placeholder="Filter by Fee Status"
           style={{ width: 200 }}
-          // defaultValue={"paid"}
           value={feeStatusFilter || "Select Status"}
           onChange={(value) => setFeeStatusFilter(value)}
           allowClear
@@ -202,74 +183,29 @@ const FeesCollection = () => {
         </Select>
       </div>
 
-      {/* 🔹 Table */}
-      <div className="table-wrapper">
-        <Table
-          dataSource={filteredData}
-          columns={columns}
-          // pagination={{ pageSize: 10 }}
-             pagination={false}
-          loading={isLoading}
-          className="custom-table"
-        />
-      </div>
+      {/* Table */}
+      <div className="table-container">
 
-      {/* 🔹 Add Payment Modal */}
-      <Modal
-        title={`Add Payment for ${selectedFee?.memberName || ""}`}
-        visible={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
-        onOk={handleAddPayment}
-        okText="Submit"
-        confirmLoading={isAddingPayment}
-      >
-        {selectedFee && (
-          <Card bordered style={{ marginBottom: 20, background: "#fafafa" }}>
-            <p>
-              <strong>Plan Name:</strong> {selectedFee.planName}
-            </p>
-            <p>
-              <strong>Total Amount:</strong> ₹
-              {selectedFee.feeAmount.toLocaleString()}
-            </p>
-            <p>
-              <strong>Paid Amount:</strong> ₹
-              {selectedFee.paidAmount.toLocaleString()}
-            </p>
-            <p>
-              <strong>Pending Amount:</strong> ₹
-              {selectedFee.dueAmount.toLocaleString()}
-            </p>
-          </Card>
-        )}
+      <Table
+        dataSource={filteredData}
+        columns={columns}
+        pagination={false}
+        loading={isLoading}
+        className="custom-table"
+        />
+        </div>
 
-        <Input
-          placeholder="Amount"
-          type="number"
-          value={paymentData.amount}
-          onChange={(e) =>
-            setPaymentData({ ...paymentData, amount: e.target.value })
-          }
-          style={{ marginBottom: 10 }}
-        />
-        <Select
-          value={paymentData.mode}
-          onChange={(value) => setPaymentData({ ...paymentData, mode: value })}
-          style={{ width: "100%", marginBottom: 10 }}
-        >
-          <Option value="cash">Cash</Option>
-          <Option value="upi">UPI</Option>
-          <Option value="card">Card</Option>
-          <Option value="bank">Bank</Option>
-        </Select>
-        <Input.TextArea
-          placeholder="Remark"
-          value={paymentData.remark}
-          onChange={(e) =>
-            setPaymentData({ ...paymentData, remark: e.target.value })
-          }
-        />
-      </Modal>
+      {/* Add Payment Modal */}
+    
+<AddPaymentModel isModalVisible={isModalVisible} setIsModalVisible={setIsModalVisible} selectedFee={selectedFee}/>
+      {/* ✅ Renew Modal */}
+      <RenewModal
+        selectedFee={selectedFee}
+        isRenewModalVisible={isRenewModalVisible}
+        setIsRenewModalVisible={setIsRenewModalVisible}
+
+        gymPlan={gymPlan}
+      />
     </div>
   );
 };
