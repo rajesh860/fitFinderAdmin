@@ -5,7 +5,7 @@ export const dynamicBaseQuery = async (args, WebApi, extraOptions) => {
   const rawBaseQuery = fetchBaseQuery({
     // baseUrl: "http://192.168.1.34:3001",
     // baseUrl: "http://localhost:3001",
-    baseUrl: "http://3.111.34.243/api",
+    baseUrl: "http://13.60.166.240/api",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
