@@ -19,7 +19,7 @@ dayjs.extend(isSameOrAfter);
 
 const UserDetail = () => {
   const { id } = useParams();
-
+  console.log("Membership Data:", id);
   // ----- filters
   const [period, setPeriod] = useState("current");
   const [monthDate, setMonthDate] = useState(dayjs());
@@ -46,7 +46,7 @@ const UserDetail = () => {
       : null;
   }, [data?.user?.currentMembership?.membership_end]);
 
-  console.log("Membership Data:", data?.user?.currentMembership);
+
 
   // ----- Combine all attendance data (both from root and currentMembership)
   const allAttendanceData = useMemo(() => {

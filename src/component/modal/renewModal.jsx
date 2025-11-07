@@ -16,35 +16,76 @@ const RenewModal = ({
   const [form] = Form.useForm();
   const [trigg] = useRenewPlanMutation();
   const [selectedPlan, setSelectedPlan] = useState(null);
+  
+  // ✅ Fixed: DatePicker ke liye separate state maintain karo
+  const [startDateValue, setStartDateValue] = useState(null);
+
+  console.log(selectedFee,"selectedFee");
+
   // Auto select first plan when modal opens
   useEffect(() => {
     if (isRenewModalVisible && gymPlan?.length > 0) {
       const first = gymPlan[0];
       setSelectedPlan(first);
+      setStartDateValue(null); // ✅ Reset date when modal opens
       form.setFieldsValue({
         planName: first.planName,
         totalAmount: first.price,
         durationInMonths: first.durationInMonths,
         paidAmount: 0,
         pendingAmount: first.price,
+        startDate: null, // ✅ Explicitly set to null
+        endDate: null,   // ✅ Explicitly set to null
       });
     }
   }, [isRenewModalVisible, gymPlan]);
 
-  // 🧠 When start date changes → auto calculate end date
-  const handleStartDateChange = (date) => {
+  // ✅ Fixed: Handle start date change properly
+  const handleStartDateChange = (date, dateString) => {
+    console.log("Date selected:", date, dateString);
+    
     if (!date || !selectedPlan?.durationInMonths) {
-      form.setFieldsValue({ startDate: null, endDate: null });
+      setStartDateValue(null);
+      form.setFieldsValue({ 
+        startDate: null, 
+        endDate: null 
+      });
       return;
     }
 
     const start = moment(date);
     const end = moment(start).add(selectedPlan.durationInMonths, "months");
+    
+    setStartDateValue(date); // ✅ Update state
     form.setFieldsValue({
-      startDate: start,
+      startDate: date,
       endDate: end,
     });
   };
+
+  // ✅ Fixed: Handle plan change - reset dates
+  const handlePlanChange = (value) => {
+    const selected = gymPlan.find((p) => p.planName === value);
+    setSelectedPlan(selected);
+    setStartDateValue(null); // ✅ Reset date when plan changes
+    
+    const paid = form.getFieldValue("paidAmount") || 0;
+    form.setFieldsValue({
+      totalAmount: selected?.price || "",
+      durationInMonths: selected?.durationInMonths || "",
+      pendingAmount: selected?.price && paid ? selected.price - Number(paid) : selected?.price || "",
+      startDate: null, // ✅ Reset start date
+      endDate: null,   // ✅ Reset end date
+    });
+  };
+
+  // ✅ Fixed: Modal close par reset karo
+  const handleModalClose = () => {
+    setStartDateValue(null); // ✅ Reset date state
+    form.resetFields();
+    setIsRenewModalVisible(false);
+  };
+
   // 🧾 Handle submit
   const handleRenewPlan = async (values) => {
     try {
@@ -52,7 +93,6 @@ const RenewModal = ({
       if (!plan?._id) return toast.error("Invalid plan selection");
 
       // ✅ Prepare payload as per backend API
-  
       const payload = {
         memberId: selectedFee?.memberId,
         planId: plan?.planId,
@@ -67,8 +107,7 @@ const RenewModal = ({
 
       if (response?.success) {
         toast.success("Plan renewed successfully!");
-        setIsRenewModalVisible(false);
-        form.resetFields();
+        handleModalClose(); // ✅ Use common close function
       } else {
         toast.error(response?.message || "Failed to renew plan");
       }
@@ -80,7 +119,7 @@ const RenewModal = ({
 
   return (
     <Modal
-      destroyOnHidden
+      destroyOnClose // ✅ Yeh important hai
       className="edit-plan-modal"
       bodyStyle={{
         background: "#161b22",
@@ -93,8 +132,12 @@ const RenewModal = ({
         </span>
       }
       open={isRenewModalVisible}
-      onCancel={() => setIsRenewModalVisible(false)}
+      onCancel={handleModalClose} // ✅ Use common close function
       footer={null}
+      afterClose={() => {
+        setStartDateValue(null); // ✅ Modal close hone ke baad bhi reset
+        form.resetFields();
+      }}
     >
       {selectedFee && (
         <Card
@@ -107,7 +150,7 @@ const RenewModal = ({
           }}
         >
           <p>
-            <strong>Current Plan:</strong> {selectedFee.planName}
+            <strong>Current Plan:</strong> {selectedFee.status === "expired" ? <span style={{color:"red"}}>No Active Plan</span> : selectedFee.planName }
           </p>
           <p>
             <strong>Next Due Date:</strong> {selectedFee.nextDueDate}
@@ -131,19 +174,7 @@ const RenewModal = ({
           <Select
             placeholder="Select Plan"
             loading={planLoading}
-            onChange={(value) => {
-              const selected = gymPlan.find((p) => p.planName === value);
-              setSelectedPlan(selected);
-              const paid = form.getFieldValue("paidAmount") || 0;
-              form.setFieldsValue({
-                totalAmount: selected?.price || "",
-                durationInMonths: selected?.durationInMonths || "",
-                pendingAmount:
-                  selected?.price && paid
-                    ? selected.price - Number(paid)
-                    : selected?.price || "",
-              });
-            }}
+            onChange={handlePlanChange} // ✅ Use fixed handler
             style={{
               width: "100%",
               background: "#0d1117",
@@ -167,6 +198,7 @@ const RenewModal = ({
           rules={[{ required: true, message: "Please select start date" }]}
         >
           <DatePicker
+            value={startDateValue} // ✅ Controlled value
             style={{
               width: "100%",
               background: "#0d1117",
@@ -179,6 +211,11 @@ const RenewModal = ({
               current && current < moment().startOf("day")
             }
             onChange={handleStartDateChange}
+            allowClear={true} // ✅ Allow clear option
+            onClear={() => {
+              setStartDateValue(null);
+              form.setFieldsValue({ endDate: null });
+            }}
           />
         </Form.Item>
 
@@ -187,19 +224,12 @@ const RenewModal = ({
           name="endDate"
           label={<span style={{ color: "#c9d1d9" }}>End Date</span>}
         >
-          <Input
-            readOnly
-            style={{
-              background: "#0d1117",
-              color: "#c9d1d9",
-              borderColor: "#30363d",
-            }}
-            value={
-              form.getFieldValue("endDate")
-                ? moment(form.getFieldValue("endDate")).format("YYYY-MM-DD")
-                : ""
-            }
-          />
+         <DatePicker
+  disabled
+  value={form.getFieldValue("endDate") ? moment(form.getFieldValue("endDate")) : null}
+  format="YYYY-MM-DD"
+  style={{ width: "100%", background: "#0d1117", borderColor: "#30363d" }}
+/>
         </Form.Item>
 
         {/* Total Amount */}

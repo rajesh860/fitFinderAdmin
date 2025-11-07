@@ -1,5 +1,16 @@
 import React, { useEffect } from "react";
-import { Card, Avatar, Row, Col, Tag, Typography, Space, Spin, message } from "antd";
+import {
+  Card,
+  Avatar,
+  Row,
+  Col,
+  Tag,
+  Typography,
+  Space,
+  Spin,
+  message,
+  Divider,
+} from "antd";
 import { useParams } from "react-router-dom";
 import {
   FaEnvelope,
@@ -26,8 +37,8 @@ const TrainerDetail = () => {
       <div
         style={{
           textAlign: "center",
-          paddingTop: "20vh",
-    
+          paddingTop: "25vh",
+          background: "linear-gradient(145deg,#0f0f0f,#1c1c1c)",
           height: "100vh",
         }}
       >
@@ -40,31 +51,46 @@ const TrainerDetail = () => {
   return (
     <div
       style={{
- 
+        background: "linear-gradient(135deg,#0b0b0c,#161616,#0b0b0c)",
         minHeight: "100vh",
         color: "#fff",
+        paddingBottom: 50,
       }}
     >
       {/* ================= Header Section ================= */}
       <Card
         bordered={false}
         style={{
-                borderRadius:0,
-     backgroundColor: "#1A1A1A",
-          overflow: "hidden",
+          background:
+            "linear-gradient(145deg, rgba(35,35,35,0.9), rgba(20,20,20,0.8))",
+          backdropFilter: "blur(8px)",
+          borderRadius: "18px",
+          margin: "24px",
+          boxShadow: "0 0 25px rgba(255,102,0,0.15)",
         }}
       >
-        <Row gutter={[20, 20]} align="middle">
+        <Row gutter={[30, 20]} align="middle" justify="center">
           <Col xs={24} md={8} style={{ textAlign: "center" }}>
             <Avatar
               size={150}
               src={trainer?.photo || demoAvatar}
-            
+              style={{
+                border: "3px solid #ff6600",
+                boxShadow: "0 0 25px rgba(255,102,0,0.4)",
+              }}
             />
           </Col>
 
           <Col xs={24} md={16}>
-            <Title level={2} style={{ color: "#fff", marginBottom: 5 }}>
+            <Title
+              level={2}
+              style={{
+                color: "#fff",
+                marginBottom: 6,
+                fontWeight: 700,
+                textShadow: "0 0 10px rgba(255,255,255,0.2)",
+              }}
+            >
               {trainer?.user?.name || "Unknown Trainer"}
             </Title>
 
@@ -73,13 +99,20 @@ const TrainerDetail = () => {
               <Text style={{ color: "#FFD700", fontWeight: 500 }}>
                 {trainer?.rating || 0}/5
               </Text>
-              <Text style={{ color: "#888" }}>
+              <Text style={{ color: "#aaa" }}>
                 ({trainer?.totalReviews || 0} reviews)
               </Text>
             </Space>
 
             <div style={{ marginTop: 15 }}>
-              <Text style={{ color: "#ccc", fontSize: 15, lineHeight: 1.8 }}>
+              <Text
+                style={{
+                  color: "#ddd",
+                  fontSize: 15,
+                  lineHeight: 1.8,
+                  fontWeight: 400,
+                }}
+              >
                 {trainer?.bio ||
                   "Certified fitness professional helping people transform their lifestyle with proper guidance."}
               </Text>
@@ -92,11 +125,24 @@ const TrainerDetail = () => {
       <Card
         bordered={false}
         style={{
-          borderRadius:0,
-        backgroundColor: "#1A1A1A",
+          margin: "24px",
+          background:
+            "linear-gradient(160deg, rgba(30,30,30,0.9), rgba(15,15,15,0.8))",
+          backdropFilter: "blur(8px)",
+          borderRadius: "18px",
+          boxShadow: "0 0 25px rgba(255,102,0,0.15)",
         }}
       >
-        <Title level={3} style={{ color: "#fff", marginBottom: 25 }}>
+        <Title
+          level={3}
+          style={{
+            color: "#fff",
+            marginBottom: 25,
+            fontWeight: 600,
+            borderLeft: "4px solid #ff6600",
+            paddingLeft: 12,
+          }}
+        >
           Trainer Information
         </Title>
 
@@ -127,12 +173,23 @@ const TrainerDetail = () => {
               </Text>
             </Space>
           </Col>
+        </Row>
 
-          <Col xs={24} style={{ marginTop: 15 }}>
+        <Divider style={{ borderColor: "#333", margin: "20px 0" }} />
+
+        <Row>
+          <Col xs={24}>
             <Space align="start">
               <FaDumbbell color="#FF6600" style={{ marginTop: 4 }} />
               <div>
-                <Text style={{ color: "#fff", display: "block", marginBottom: 8 }}>
+                <Text
+                  style={{
+                    color: "#fff",
+                    display: "block",
+                    marginBottom: 8,
+                    fontWeight: 500,
+                  }}
+                >
                   Specialization:
                 </Text>
                 {trainer?.specialization?.length ? (
@@ -140,11 +197,12 @@ const TrainerDetail = () => {
                     {trainer.specialization.map((spec, index) => (
                       <Tag
                         key={index}
-                        color="#FF6600"
+                        color="#ff6600"
                         style={{
                           fontSize: 14,
                           padding: "6px 12px",
                           borderRadius: 20,
+                          fontWeight: 500,
                         }}
                       >
                         {spec}
@@ -164,14 +222,24 @@ const TrainerDetail = () => {
       <Card
         bordered={false}
         style={{
-        
-        backgroundColor: "#1A1A1A",
-          borderRadius: 0,
-          
-     
+          margin: "24px",
+          background:
+            "linear-gradient(160deg, rgba(25,25,25,0.9), rgba(10,10,10,0.85))",
+          backdropFilter: "blur(8px)",
+          borderRadius: "18px",
+          boxShadow: "0 0 25px rgba(255,102,0,0.15)",
         }}
       >
-        <Title level={3} style={{ color: "#fff", marginBottom: 20 }}>
+        <Title
+          level={3}
+          style={{
+            color: "#fff",
+            marginBottom: 20,
+            fontWeight: 600,
+            borderLeft: "4px solid #ff6600",
+            paddingLeft: 12,
+          }}
+        >
           Trainer Gallery
         </Title>
 
@@ -179,26 +247,39 @@ const TrainerDetail = () => {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
               gap: 15,
             }}
           >
             {trainer.gallery.map((img, i) => (
-              <img
+              <div
                 key={i}
-                src={img}
-                alt={`Gallery ${i}`}
                 style={{
-                  width: "100%",
-                  height: 160,
-                  objectFit: "cover",
-                  borderRadius: 10,
-                  transition: "transform 0.3s ease",
-                  cursor: "pointer",
+                  position: "relative",
+                  borderRadius: "12px",
+                  overflow: "hidden",
                 }}
-                onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-                onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1.0)")}
-              />
+              >
+                <img
+                  src={img}
+                  alt={`Gallery ${i}`}
+                  style={{
+                    width: "100%",
+                    height: 180,
+                    objectFit: "cover",
+                    transition: "all 0.4s ease",
+                    filter: "brightness(0.85)",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = "scale(1.05)";
+                    e.currentTarget.style.filter = "brightness(1)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = "scale(1)";
+                    e.currentTarget.style.filter = "brightness(0.85)";
+                  }}
+                />
+              </div>
             ))}
           </div>
         ) : (

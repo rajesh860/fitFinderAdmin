@@ -84,7 +84,7 @@ const AddPaymentModel = ({ selectedFee, setIsModalVisible, isModalVisible }) => 
           }}
         >
           <p style={{ marginBottom: 6 }}>
-            <strong>Plan Name:</strong> {selectedFee.planName}
+            <strong>Plan Name:</strong>  {selectedFee.planName !== "-"?selectedFee.planName : "No Plan"}
           </p>
           <p style={{ marginBottom: 6 }}>
             <strong>Total Amount:</strong> ₹{selectedFee.feeAmount.toLocaleString()}

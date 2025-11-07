@@ -18,7 +18,12 @@ import RenewModal from "../../component/modal/renewModal";
 import AddPaymentModel from "../../component/modal/addPaymentModel";
 
 const { Option } = Select;
-
+const statusColors = {
+  active: "#10B981",
+  completed: "#10B981",
+  pending: "#FACC15",
+  expired: "#EF4444",
+};
 const FeesCollection = () => {
   const [feeStatusFilter, setFeeStatusFilter] = useState("");
   const [searchText, setSearchText] = useState("");
@@ -54,7 +59,7 @@ const FeesCollection = () => {
       feeAmount: item.totalAmount || 0,
       paidAmount: item.paidAmount || 0,
       dueAmount: item.pendingAmount || 0,
-      status: item.status === "pending" ? "Pending" : "Paid",
+      status: item.status,
       paymentDate:
         item.payments?.[0]?.date &&
         moment(item.payments[0].date).format("DD MMM YYYY"),
@@ -107,8 +112,8 @@ const FeesCollection = () => {
       dataIndex: "status",
       key: "status",
       render: (status) => {
-        let color = status === "Paid" ? "green" : "gold";
-        return <Tag color={color}>{status}</Tag>;
+        let color = statusColors[status];
+        return <Tag color={color} style={{textTransform:"uppercase"}}>{status}</Tag>;
       },
     },
     { title: "Payment Date", dataIndex: "paymentDate", key: "paymentDate" },

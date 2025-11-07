@@ -59,7 +59,13 @@ const AllUser = () => {
   };
 
   // Table Columns
-  const columns = [  {
+  const columns = [
+    {
+      title: "S.No",
+      key: "index",
+      render: (text, record, index) => index + 1,
+    },
+    {
       title: "User id",
       dataIndex: "userId",
       key: "userId",
@@ -69,16 +75,16 @@ const AllUser = () => {
       dataIndex: "name",
       key: "name",
       render: (r, record) => {
-        console.log(record.photo,"bjk")
-        return(
-
-        <Space size={12} align="center" className="ua-member-cell">
-          <Avatar src={record.photo} size={40} />
-          <div className="ua-member-meta">
-            <div className="ua-member-name">{r}</div>
-          </div>
-        </Space>
-      )},
+        console.log(record.photo, "bjk");
+        return (
+          <Space size={12} align="center" className="ua-member-cell">
+            <Avatar src={record.photo} size={40} />
+            <div className="ua-member-meta">
+              <div className="ua-member-name">{r}</div>
+            </div>
+          </Space>
+        );
+      },
     },
     {
       title: "Email",

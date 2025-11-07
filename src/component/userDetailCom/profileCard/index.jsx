@@ -22,9 +22,9 @@ const ProfileCard = ({ userData }) => {
       <h2>{userData?.name}</h2>
 
       <Tag color="#fadb14" className="tag gold">
-        {userData?.planName}
+        {userData?.planName || "N/A"}
       </Tag>
-      <Tag color="green" className="tag active">
+      <Tag color="green" className="tag active" style={{textTransform:"uppercase"}}>
         {userData?.membership_status}
       </Tag>
 
@@ -37,7 +37,7 @@ const ProfileCard = ({ userData }) => {
         </div>
         <div className="row">
           <span>Plan Price:</span>
-          <span className="bold green">₹{userData?.planPrice}</span>
+          <span className="bold green">₹{userData?.planPrice|| "N/A"}</span>
         </div>
       </div>
 

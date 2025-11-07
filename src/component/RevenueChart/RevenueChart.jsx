@@ -13,17 +13,12 @@ import "./styles.scss";
 
 const { Option } = Select;
 
-const data = [
-  { month: "Jan", revenue: 65000 },
-  { month: "Feb", revenue: 72000 },
-  { month: "Mar", revenue: 68000 },
-  { month: "Apr", revenue: 78000 },
-  { month: "May", revenue: 85000 },
-  { month: "Jun", revenue: 90000 },
-];
-
-const RevenueChart = () => {
+const RevenueChart = ({ revenueData }) => {
   const [duration, setDuration] = useState("6");
+
+  // Agar future me monthly data aaye, use is format me map kar sakte ho
+  const data = revenueData?.monthlyStats || [
+  ];
 
   return (
     <Card bordered={false} className="revenue-card">
@@ -52,8 +47,7 @@ const RevenueChart = () => {
             <YAxis
               stroke="#a0a0a0"
               fontSize={12}
-              tickFormatter={(val) => `${val / 1000}k`}
-              domain={[60000, 95000]}
+              tickFormatter={(val) => `₹${val / 1000}k`}
             />
             <Tooltip
               contentStyle={{
@@ -61,7 +55,7 @@ const RevenueChart = () => {
                 border: "1px solid #333",
                 color: "#fff",
               }}
-              formatter={(value) => [`$${value.toLocaleString()}`, "Revenue"]}
+              formatter={(value) => [`₹${value.toLocaleString()}`, "Revenue"]}
             />
             <Line
               type="monotone"

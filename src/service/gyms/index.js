@@ -166,12 +166,21 @@ export const gymList = createApi({
       }),
       invalidatesTags: ["gym"],
     }),
+    getAnalytics: builder.query({
+      query: () => ({
+        url: `/gym/dashboard/analytics`,
+        method: "GET",
+   
+      }),
+      invalidatesTags: ["gym"],
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const {
+  useGetAnalyticsQuery,
   useRenewPlanMutation,
   useAddPendingPaymentMutation,
   useGetFeesCollectionQuery,
