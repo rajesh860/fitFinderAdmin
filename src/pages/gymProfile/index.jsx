@@ -14,6 +14,7 @@ import {
   LoadingOutlined,
 } from "@ant-design/icons";
 import "./styles.scss";
+import imageCompression from "browser-image-compression";
 import GymBanner from "../../component/gymProfileComponent/GymBanner";
 import { useDeleteGalleryImageMutation, useGymProfileQuery, useUpdarteGymProfileMutation } from "../../service/gyms";
 import EditGymModal from "../../component/modal/EditGymModal";
@@ -52,27 +53,37 @@ const GymProfile = () => {
 
   // ✅ Handle Gallery Upload
   const handleGalleryUpload = async ({ file }) => {
-    try {
-      console.log(data,"jhk")
-      setUploading(true);
-      const formData = new FormData();
-      formData.append("images", file);
+  try {
+    setUploading(true);
 
-      const res = await uploadGalleryImage({ id: gymId, data: formData }).unwrap();
+    // 1️⃣ Compress the image
+    const options = {
+      maxSizeMB: 1,           // Max size 1 MB
+      maxWidthOrHeight: 1024, // Resize to max 1024px width/height
+      useWebWorker: true,
+    };
+    const compressedFile = await imageCompression(file, options);
 
-      if (res?.success) {
-        toast.success("Gallery image uploaded successfully!");
-        refetch(); // Refresh gym data
-      } else {
-        toast.error(res?.message || "Upload failed");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to upload image");
-    } finally {
-      setUploading(false);
+    // 2️⃣ Append compressed image to FormData
+    const formData = new FormData();
+    formData.append("images", compressedFile);
+
+    // 3️⃣ Upload
+    const res = await uploadGalleryImage({ id: gymId, data: formData }).unwrap();
+
+    if (res?.success) {
+      toast.success("Gallery image uploaded successfully!");
+      refetch(); // Refresh gym data
+    } else {
+      toast.error(res?.message || "Upload failed");
     }
-  };
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to upload image");
+  } finally {
+    setUploading(false);
+  }
+};
 
   const ownerImgSrc =
     Array.isArray(owner_image) && owner_image.length > 0

@@ -1,86 +1,92 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./styles.scss";
-import {
-  Table,
-  Tag,
-  Space,
-  Button,
-  Card,
-  Select,
-} from "antd";
+import { Table, Tag, Space, Button, Card, Select } from "antd";
 import PageHeader from "../../component/pageHeader";
-import {
-  useGetFeesCollectionQuery,
-} from "../../service/gyms";
+import { useGetFeesCollectionQuery } from "../../service/gyms";
 import moment from "moment";
 import { useGetMyPlanQuery } from "../../service/plans/indx";
 import RenewModal from "../../component/modal/renewModal";
 import AddPaymentModel from "../../component/modal/addPaymentModel";
 
 const { Option } = Select;
+
 const statusColors = {
   active: "#10B981",
   completed: "#10B981",
   pending: "#FACC15",
   expired: "#EF4444",
 };
+
 const FeesCollection = () => {
   const [feeStatusFilter, setFeeStatusFilter] = useState("");
   const [searchText, setSearchText] = useState("");
 
-  const { data: apiResponse, isLoading } = useGetFeesCollectionQuery({
-    fee_status: feeStatusFilter,
-    searchText,
-  });
+  // ✅ Fetch all fee collections — initially skip
+  const {
+    data: apiResponse,
+    isLoading,
+    refetch,
+  } = useGetFeesCollectionQuery(
+    {
+      fee_status: feeStatusFilter,
+      searchText,
+    },
+    // {
+    //   skip: !feeStatusFilter && !searchText, // 🚀 Run only when filter or search active
+    // }
+  );
 
+  const { data: gymPlan } = useGetMyPlanQuery();
 
-  const { data: gymPlan, isLoading: planLoading } = useGetMyPlanQuery();
+  // 🔹 Trigger refetch when filter changes
+  useEffect(() => {
+    if(feeStatusFilter || searchText){
 
-  // 🔹 Modal States
+      refetch();
+    }
+  }, [feeStatusFilter, searchText]);
+
+  // 🔹 Modals
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isRenewModalVisible, setIsRenewModalVisible] = useState(false);
   const [selectedFee, setSelectedFee] = useState(null);
 
- 
-
   if (isLoading) return <p>Loading...</p>;
   if (!apiResponse?.data) return <p>No fee collection available</p>;
 
-  // ✅ Map API data to Table rows
+  // ✅ Map data for table
   const data =
-    apiResponse?.data?.map((item) => ({
-      userId:item.member?.user?.userId,
-      key: item._id,
-      memberId: item.member?._id || "", // ✅ Add memberId here
-      memberName: item.member?.user?.name || "-",
-      memberEmail: item.member?.user?.email || "-",
-      memberPhone: item.member?.user?.phone || "-",
-      planName: item.planName || "-",
-      feeAmount: item.totalAmount || 0,
-      paidAmount: item.paidAmount || 0,
-      dueAmount: item.pendingAmount || 0,
-      status: item.status,
-      paymentDate:
-        item.payments?.[0]?.date &&
-        moment(item.payments[0].date).format("DD MMM YYYY"),
-      nextDueDate: item.endDate && moment(item.endDate).format("DD MMM YYYY"),
-      payments: item.payments || [],
-    })) || [];
+    apiResponse?.data?.map((item) => {
+      const current = item.current || {};
+      const payments = item.payments || [];
+      const user = item.member?.user || {};
 
-  const filteredData = data.filter((item) =>
-    feeStatusFilter
-      ? item.status.toLowerCase() === feeStatusFilter.toLowerCase()
-      : true
-  );
+      return {
+        key: item._id,
+        userId: user.userId || "-",
+        memberId: item.member?._id || "",
+        memberName: user.name || "-",
+        memberEmail: user.email || "-",
+        memberPhone: user.phone || "-",
+        planName: current.planName || "-",
+        feeAmount: current.totalAmount || 0,
+        paidAmount: current.paidAmount || 0,
+        dueAmount: current.pendingAmount || 0,
+        status: current.status || "pending",
+        paymentDate:
+          payments?.length > 0
+            ? moment(payments[0].createdAt).format("DD MMM YYYY")
+            : "-",
+        nextDueDate: current.endDate
+          ? moment(current.endDate).format("DD MMM YYYY")
+          : "-",
+        payments,
+      };
+    }) || [];
 
-  const summary = apiResponse?.summary || {};
-  const totalFees = summary.totalFees || 0;
-  const totalCollection = summary.totalCollection || 0;
-  const totalPending = summary.totalPending || 0;
-
- 
+  // ✅ Columns
   const columns = [
-    {title:"user id",dataIndex:"userId",key:"userId"},
+    { title: "User ID", dataIndex: "userId", key: "userId" },
     { title: "Member Name", dataIndex: "memberName", key: "memberName" },
     { title: "Email", dataIndex: "memberEmail", key: "memberEmail" },
     { title: "Phone", dataIndex: "memberPhone", key: "memberPhone" },
@@ -89,21 +95,21 @@ const FeesCollection = () => {
       title: "Fee Amount (₹)",
       dataIndex: "feeAmount",
       key: "feeAmount",
-      render: (value) => `₹${value.toLocaleString()}`,
+      render: (v) => `₹${v.toLocaleString()}`,
     },
     {
       title: "Paid Amount (₹)",
       dataIndex: "paidAmount",
       key: "paidAmount",
-      render: (value) => `₹${value.toLocaleString()}`,
+      render: (v) => `₹${v.toLocaleString()}`,
     },
     {
       title: "Due Amount (₹)",
       dataIndex: "dueAmount",
       key: "dueAmount",
-      render: (value) => (
-        <span style={{ color: value > 0 ? "#faad14" : "#52c41a" }}>
-          ₹{value.toLocaleString()}
+      render: (v) => (
+        <span style={{ color: v > 0 ? "#faad14" : "#52c41a" }}>
+          ₹{v.toLocaleString()}
         </span>
       ),
     },
@@ -111,10 +117,11 @@ const FeesCollection = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (status) => {
-        let color = statusColors[status];
-        return <Tag color={color} style={{textTransform:"uppercase"}}>{status}</Tag>;
-      },
+      render: (status) => (
+        <Tag color={statusColors[status]} style={{ textTransform: "uppercase" }}>
+          {status}
+        </Tag>
+      ),
     },
     { title: "Payment Date", dataIndex: "paymentDate", key: "paymentDate" },
     { title: "Next Due Date", dataIndex: "nextDueDate", key: "nextDueDate" },
@@ -136,7 +143,7 @@ const FeesCollection = () => {
             type="primary"
             style={{ backgroundColor: "#f59e0b", borderColor: "#f59e0b" }}
             onClick={() => {
-              setSelectedFee(record); // ✅ record me memberId hai
+              setSelectedFee(record);
               setIsRenewModalVisible(true);
             }}
           >
@@ -146,6 +153,11 @@ const FeesCollection = () => {
       ),
     },
   ];
+
+  // ✅ Totals summary
+  const totalFees = apiResponse?.summary?.totalFees || 0;
+  const totalCollection = apiResponse?.summary?.totalCollection || 0;
+  const totalPending = apiResponse?.summary?.totalPending || 0;
 
   return (
     <div className="fees-collection-container">
@@ -157,7 +169,7 @@ const FeesCollection = () => {
         onSearchChange={setSearchText}
       />
 
-      {/* Summary Cards */}
+      {/* Summary */}
       <div className="summary-cards">
         <Card className="summary-card" bordered={false}>
           <h3>Total Fees</h3>
@@ -178,37 +190,38 @@ const FeesCollection = () => {
         <Select
           placeholder="Filter by Fee Status"
           style={{ width: 200 }}
-          value={feeStatusFilter || "Select Status"}
-          onChange={(value) => setFeeStatusFilter(value)}
+          value={feeStatusFilter || undefined}
+          onChange={(v) => setFeeStatusFilter(v)}
           allowClear
         >
-          <Option value="paid">Paid</Option>
-          <Option value="pending">Pending</Option>
-          <Option value="overdue">Over due</Option>
+          <Option value="active">Active</Option>
+          <Option value="completed">Completed</Option>
+          <Option value="expired">Expired</Option>
         </Select>
       </div>
 
       {/* Table */}
       <div className="table-container">
-
-      <Table
-        dataSource={filteredData}
-        columns={columns}
-        pagination={false}
-        loading={isLoading}
-        className="custom-table"
+        <Table
+          dataSource={data}
+          columns={columns}
+          pagination={false}
+          loading={isLoading}
+          className="custom-table"
         />
-        </div>
+      </div>
 
-      {/* Add Payment Modal */}
-    
-<AddPaymentModel isModalVisible={isModalVisible} setIsModalVisible={setIsModalVisible} selectedFee={selectedFee}/>
-      {/* ✅ Renew Modal */}
+      {/* Modals */}
+      <AddPaymentModel
+        isModalVisible={isModalVisible}
+        setIsModalVisible={setIsModalVisible}
+        selectedFee={selectedFee}
+      />
+
       <RenewModal
         selectedFee={selectedFee}
         isRenewModalVisible={isRenewModalVisible}
         setIsRenewModalVisible={setIsRenewModalVisible}
-
         gymPlan={gymPlan}
       />
     </div>
