@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Card, Select, DatePicker, Input, Form, Button } from "antd";
-import moment from "moment";
 import { toast } from "react-toastify";
 import { useRenewPlanMutation } from "../../service/gyms";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 
@@ -43,8 +43,8 @@ const RenewModal = ({
       return;
     }
 
-    const start = moment(date);
-    const end = moment(start).add(selectedPlan.durationInMonths, "months");
+    const start = dayjs(date);
+    const end = dayjs(start).add(selectedPlan.durationInMonths, "months");
 
     setStartDateValue(date);
     form.setFieldsValue({
@@ -89,7 +89,7 @@ const RenewModal = ({
         paidAmount: Number(values.paidAmount || 0),
         pendingAmount: Number(values.pendingAmount || 0),
       };
-
+// console.log(payload,"jkl")
       const response = await trigg(payload).unwrap();
 
       if (response?.success) {
@@ -215,7 +215,7 @@ const RenewModal = ({
             disabled
             value={
               form.getFieldValue("endDate")
-                ? moment(form.getFieldValue("endDate"))
+                ? dayjs(form.getFieldValue("endDate"))
                 : null
             }
             format="YYYY-MM-DD"
