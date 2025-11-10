@@ -11,7 +11,6 @@ import moment from "moment";
 import userImg from "../../../assets/img/user.png"
 
 const ProfileCard = ({ userData }) => {
-  console.log(userData,"userData")
   return (
     <div className="profile-card">
       <img

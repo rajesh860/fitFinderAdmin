@@ -21,6 +21,8 @@ import AddMemberProgress from "../../component/modal/addMemberProgress";
 import { Button } from "antd";
 import { toast } from "react-toastify";
 import { skipToken } from "@reduxjs/toolkit/query";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const UserDetail = () => {
   const { id } = useParams(); // memberId
@@ -54,16 +56,7 @@ const UserDetail = () => {
   );
 
   const attendanceArray = getMemberAttendance?.data?.attendance || [];
-// const uniqueAttendance = [];
-// const seenDates = new Set();
 
-// attendanceArray.forEach((item) => {
-//   const formattedDate = dayjs(item.date).format("YYYY-MM-DD"); // normalize date
-//   if (!seenDates.has(formattedDate)) {
-//     seenDates.add(formattedDate);
-//     uniqueAttendance.push(item);
-//   }
-// });
   useEffect(() => {
     if (data?.success) {
       setUserData({
@@ -107,6 +100,101 @@ const UserDetail = () => {
       refetch();
     }
   }, [apiResponse, refetch]);
+
+  // ✅ Export Progress to Excel Function
+  const exportProgressToExcel = () => {
+    const mergerHistory = [getProgress?.data?.current,...getProgress?.data?.history]
+    if (!mergerHistory.length) {
+      toast.warning("No progress data available to export");
+      return;
+    }
+
+    try {
+      // Prepare data for Excel
+      const excelData = getProgress.data.history.map((progress, index) => ({
+        "S.No": index + 1,
+        "Date": progress.createdAt ? new Date(progress.createdAt).toLocaleDateString('en-IN') : 'N/A',
+        "Weight (kg)": progress.weight || 'N/A',
+        "Height (cm)": progress.height || 'N/A',
+        "Arm (cm)": progress.arm || 'N/A',
+        "Waist (cm)": progress.waist || 'N/A',
+        "Thigh (cm)": progress.thigh || 'N/A',
+        "Chest (cm)": progress.chest || 'N/A',
+        "Blood Group": progress.bloodGroup || 'N/A',
+      }));
+
+      // Add current progress as first row if available
+      if (getProgress.data.current) {
+        const currentProgress = getProgress.data.current;
+        excelData.unshift({
+          "S.No": "Current",
+          "Date": "Latest",
+          "Weight (kg)": currentProgress.weight || 'N/A',
+          "Height (cm)": currentProgress.height || 'N/A',
+          "Arm (cm)": currentProgress.arm || 'N/A',
+          "Waist (cm)": currentProgress.waist || 'N/A',
+          "Thigh (cm)": currentProgress.thigh || 'N/A',
+          "Chest (cm)": currentProgress.chest || 'N/A',
+          "Blood Group": currentProgress.bloodGroup || 'N/A',
+        });
+      }
+
+      // Create worksheet
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      
+      // Create workbook
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Progress History");
+
+      // Generate Excel file
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+      // Download file
+      const fileName = `${userData.name || 'Member'}_Progress_History_${new Date().toISOString().split('T')[0]}.xlsx`;
+      saveAs(data, fileName);
+
+      toast.success("Progress data exported successfully!");
+    } catch (error) {
+      console.error("Error exporting to Excel:", error);
+      toast.error("Failed to export progress data");
+    }
+  };
+
+  // ✅ Export Attendance to Excel Function (Optional)
+  const exportAttendanceToExcel = () => {
+    if (!attendanceArray.length) {
+      toast.warning("No attendance data available to export");
+      return;
+    }
+
+    try {
+      const excelData = attendanceArray.map((attendance, index) => ({
+        "S.No": index + 1,
+        "Date": attendance.date ? new Date(attendance.date).toLocaleDateString('en-IN') : 'N/A',
+        "Check-In": attendance.checkIn ? new Date(attendance.checkIn).toLocaleTimeString('en-IN') : 'N/A',
+        "Check-Out": attendance.checkOut ? new Date(attendance.checkOut).toLocaleTimeString('en-IN') : 'N/A',
+        "Duration": attendance.duration || 'N/A',
+        "Status": attendance.status || 'N/A',
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance History");
+
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+      const fileName = `${userData.name || 'Member'}_Attendance_${new Date().toISOString().split('T')[0]}.xlsx`;
+      saveAs(data, fileName);
+
+      toast.success("Attendance data exported successfully!");
+    } catch (error) {
+      console.error("Error exporting attendance to Excel:", error);
+      toast.error("Failed to export attendance data");
+    }
+  };
+
   return (
     <div className="user-detail-container">
       {/* ➕ Add Progress Modal */}
@@ -127,8 +215,12 @@ const UserDetail = () => {
           <Button type="primary" onClick={showModal}>
             + Add Progress
           </Button>
-          <Button type="default" className="export-btn">
-            Export Excel
+          <Button type="default" className="export-btn" onClick={exportProgressToExcel}>
+            Export Progress Excel
+          </Button>
+          {/* Optional: Add attendance export button */}
+          <Button type="default" className="export-btn" onClick={exportAttendanceToExcel}>
+            Export Attendance Excel
           </Button>
         </div>
       </div>

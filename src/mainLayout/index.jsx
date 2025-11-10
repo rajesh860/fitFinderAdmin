@@ -10,6 +10,7 @@ import "./styles.scss"; // custom styles
 const { Header, Content } = Layout;
 
 const MainLayout = () => {
+  
   return (
     <Layout style={{ height: "100vh" }}>
       <SidebarMenu />

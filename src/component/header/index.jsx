@@ -7,13 +7,17 @@ import { Layout, Button, Modal, Spin, Avatar, Tooltip } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import "./styles.scss";
-
+import userImg from "../../assets/img/user.png"
 const HeaderComp = () => {
+  const userRole = localStorage.getItem("userRole")
   const { Header } = Layout;
   const [qrModalVisible, setQrModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [trigger, { data: qrData }] = useGenerateQrCodeMutation();
-  const { data, isLoading, refetch } = useGymProfileQuery();
+const { data, isLoading, refetch } = useGymProfileQuery(
+  undefined,
+  { skip: userRole === "admin" }
+);
 
   const gymData = data?.data;
   const branchQrCode = gymData?.branchQrCode;
@@ -57,6 +61,9 @@ const HeaderComp = () => {
           style={{ display: "flex", alignItems: "center", gap: "16px" }}
         >
           {/* ✅ Show button only if QR not exists */}
+
+          {userRole !== "admin" &&
+          <>
           {!branchQrCode && (
             <Button
               type="primary"
@@ -80,7 +87,8 @@ const HeaderComp = () => {
               View QR
             </Button>
           )}
-
+          </>
+ }
           {/* ✅ Profile Avatar + Hello + Name */}
           <div
             style={{
@@ -90,9 +98,9 @@ const HeaderComp = () => {
             }}
           >
             <Tooltip title="View Profile">
-              <Link to="/gym-profile" className="header-link-avatar">
+              <Link to={`${userRole !== "admin" ? "/gym-profile":"/"}`} className="header-link-avatar">
                 <Avatar
-                  src={profileImage}
+                  src={profileImage || userImg}
                   icon={!profileImage && <UserOutlined />}
                   style={{
                     // backgroundColor: Col,

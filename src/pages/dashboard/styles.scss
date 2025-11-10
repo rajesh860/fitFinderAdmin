@@ -13,3 +13,22 @@
         width: 50%;
     }
 }
+
+
+.admin-dashboard{
+       background: #0d1117;
+        min-height: 100vh;
+        padding: 24;
+        color: #fff;
+    .ant-card-head{
+        border-bottom: 1px solid #30363d;
+    }
+    .line-graph{
+        .ant-card-body{
+            padding-left: 0%;
+        }
+    }
+    // .ant-table-cell{
+    //     background-color: transparent !important;
+    // }
+}
