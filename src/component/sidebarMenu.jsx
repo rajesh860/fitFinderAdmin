@@ -61,6 +61,7 @@ const SidebarMenu = () => {
       children: [
         { key: "/enquiry/pending", icon: <CheckCircleOutlined />, label: "Pending Trials", path: "/enquiry/pending" },
         { key: "/enquiry/completed", icon: <CheckCircleOutlined />, label: "Completed Enquiries", path: "/enquiry/completed" },
+        { key: "/enquiry/booking", icon: <CheckCircleOutlined />, label: "Booking", path: "/enquiry/booking" },
       ],
     },
     { type: "divider" },
