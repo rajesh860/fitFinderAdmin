@@ -46,6 +46,10 @@ const gymRoutes = [
     element: <MemberRegistrationForm />,
   },
   {
+    path: "/members",
+    element: <AllUser />,
+  },
+  {
     path: "/enquiry/pending",
     element: <NewEnquiry />,
   },
@@ -97,6 +101,14 @@ const gymRoutes = [
     path: "/trainer/:id",
     element: <TrainerDetail />,
   },
+    {
+    path: "/members",
+    element: <AllUser />,
+  },
+  {
+    path: "/user-detail/:id",
+    element: <UserDetail />,
+  },
 ];
 
 // --- Admin Routes ---
@@ -121,14 +133,7 @@ const adminRoutes = [
     path: "/gym-detail/:id",
     element: <GymDetailPage />,
   },
-  {
-    path: "/users",
-    element: <AllUser />,
-  },
-  {
-    path: "/user-detail/:id",
-    element: <UserDetail />,
-  },
+
   // you can easily add more admin routes here
 ];
 
